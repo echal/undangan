@@ -97,10 +97,10 @@
             @if ($announcement->starts_at || $announcement->ends_at)
             <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm opacity-60">
                 @if ($announcement->starts_at)
-                <span>📅 Mulai: <strong class="opacity-100">{{ $announcement->starts_at->isoFormat('D MMM YYYY, HH:mm') }} WITA</strong></span>
+                <span>📅 Mulai: <strong class="opacity-100">{{ $announcement->starts_at->setTimezone(config('app.timezone'))->isoFormat('D MMM YYYY, HH:mm') }} WITA</strong></span>
                 @endif
                 @if ($announcement->ends_at)
-                <span>⏰ Selesai: <strong class="opacity-100">{{ $announcement->ends_at->isoFormat('D MMM YYYY, HH:mm') }} WITA</strong></span>
+                <span>⏰ Selesai: <strong class="opacity-100">{{ $announcement->ends_at->setTimezone(config('app.timezone'))->isoFormat('D MMM YYYY, HH:mm') }} WITA</strong></span>
                 @endif
             </div>
             @endif
@@ -146,7 +146,7 @@
                     <div class="pb-5 flex-1 min-w-0">
                         <p class="text-sm">{{ $log->message }}</p>
                         <p class="text-xs opacity-40 mt-1">
-                            {{ $log->created_at->isoFormat('D MMM YYYY, HH:mm') }}
+                            {{ $log->created_at->setTimezone(config('app.timezone'))->isoFormat('D MMM YYYY, HH:mm') }}
                         </p>
                     </div>
                 </div>

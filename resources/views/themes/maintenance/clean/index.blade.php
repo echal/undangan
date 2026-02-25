@@ -106,15 +106,15 @@
                 @if ($announcement->starts_at)
                 <div class="bg-slate-50 rounded-lg px-4 py-3">
                     <p class="text-xs text-slate-400 font-medium uppercase tracking-wide mb-0.5">Dimulai</p>
-                    <p class="text-sm font-semibold text-slate-700">{{ $announcement->starts_at->isoFormat('D MMM YYYY') }}</p>
-                    <p class="text-xs text-slate-500">{{ $announcement->starts_at->isoFormat('HH:mm') }} WITA</p>
+                    <p class="text-sm font-semibold text-slate-700">{{ $announcement->starts_at->setTimezone(config('app.timezone'))->isoFormat('D MMM YYYY') }}</p>
+                    <p class="text-xs text-slate-500">{{ $announcement->starts_at->setTimezone(config('app.timezone'))->isoFormat('HH:mm') }} WITA</p>
                 </div>
                 @endif
                 @if ($announcement->ends_at)
                 <div class="bg-slate-50 rounded-lg px-4 py-3">
                     <p class="text-xs text-slate-400 font-medium uppercase tracking-wide mb-0.5">Estimasi Selesai</p>
-                    <p class="text-sm font-semibold text-slate-700">{{ $announcement->ends_at->isoFormat('D MMM YYYY') }}</p>
-                    <p class="text-xs text-slate-500">{{ $announcement->ends_at->isoFormat('HH:mm') }} WITA</p>
+                    <p class="text-sm font-semibold text-slate-700">{{ $announcement->ends_at->setTimezone(config('app.timezone'))->isoFormat('D MMM YYYY') }}</p>
+                    <p class="text-xs text-slate-500">{{ $announcement->ends_at->setTimezone(config('app.timezone'))->isoFormat('HH:mm') }} WITA</p>
                 </div>
                 @endif
             </div>
@@ -159,7 +159,7 @@
                     </div>
                     <div class="pb-5 flex-1 min-w-0">
                         <p class="text-sm text-slate-700">{{ $log->message }}</p>
-                        <p class="text-xs text-slate-400 mt-1">{{ $log->created_at->isoFormat('D MMM YYYY, HH:mm') }}</p>
+                        <p class="text-xs text-slate-400 mt-1">{{ $log->created_at->setTimezone(config('app.timezone'))->isoFormat('D MMM YYYY, HH:mm') }}</p>
                     </div>
                 </div>
                 @endforeach
