@@ -14,7 +14,9 @@
         $primary  = $design['primary_color']    ?? '#4f46e5';
         $bg       = $design['background_color'] ?? '#f8fafc';
         $textClr  = $design['text_color']       ?? '#0f172a';
-        $endTime  = $design['end_time'] ?? ($announcement->ends_at?->toISOString() ?? null);
+        $endTime  = isset($design['end_time']) && $design['end_time']
+            ? \Carbon\Carbon::parse($design['end_time'])->toIso8601String()
+            : ($announcement->ends_at?->toIso8601String() ?? null);
         $showCountdown = (bool) ($design['show_countdown'] ?? true);
         $showTimeline  = (bool) ($design['show_timeline']  ?? true);
         $contact  = $design['contact'] ?? null;
