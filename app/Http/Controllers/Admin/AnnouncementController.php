@@ -39,9 +39,9 @@ class AnnouncementController extends Controller
             'ends_at'                           => ['nullable', 'date', 'after:starts_at'],
             'is_global_banner'                  => ['boolean'],
             'theme_id'                          => ['nullable', 'exists:themes,id'],
-            'design_settings.primary_color'     => ['nullable', 'string', 'max:20'],
-            'design_settings.background_color'  => ['nullable', 'string', 'max:20'],
-            'design_settings.text_color'        => ['nullable', 'string', 'max:20'],
+            'design_settings.primary_color'     => ['nullable', 'string', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
+            'design_settings.background_color'  => ['nullable', 'string', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
+            'design_settings.text_color'        => ['nullable', 'string', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
             'design_settings.end_time'          => ['nullable', 'date'],
             'design_settings.show_countdown'    => ['nullable', 'boolean'],
             'design_settings.show_timeline'     => ['nullable', 'boolean'],
@@ -51,10 +51,10 @@ class AnnouncementController extends Controller
 
         $validated['design_settings'] = $request->input('design_settings') ?: null;
 
-        $announcement = Announcement::create($validated + [
-            'status'     => 'draft',
-            'created_by' => auth()->id(),
-        ]);
+        $announcement = new Announcement($validated);
+        $announcement->status     = 'draft';
+        $announcement->created_by = auth()->id();
+        $announcement->save();
 
         AnnouncementLog::create([
             'announcement_id' => $announcement->id,
@@ -85,9 +85,9 @@ class AnnouncementController extends Controller
             'ends_at'                           => ['nullable', 'date', 'after:starts_at'],
             'is_global_banner'                  => ['boolean'],
             'theme_id'                          => ['nullable', 'exists:themes,id'],
-            'design_settings.primary_color'     => ['nullable', 'string', 'max:20'],
-            'design_settings.background_color'  => ['nullable', 'string', 'max:20'],
-            'design_settings.text_color'        => ['nullable', 'string', 'max:20'],
+            'design_settings.primary_color'     => ['nullable', 'string', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
+            'design_settings.background_color'  => ['nullable', 'string', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
+            'design_settings.text_color'        => ['nullable', 'string', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
             'design_settings.end_time'          => ['nullable', 'date'],
             'design_settings.show_countdown'    => ['nullable', 'boolean'],
             'design_settings.show_timeline'     => ['nullable', 'boolean'],

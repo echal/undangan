@@ -13,8 +13,10 @@ class MusicLibraryController extends Controller
 {
     public function index(): View
     {
-        $musics = MusicLibrary::latest()->paginate(15);
-        return view('admin.music.index', compact('musics'));
+        $musics      = MusicLibrary::withCount('events')->latest()->paginate(15);
+        $activeCount = MusicLibrary::where('is_active', true)->count();
+
+        return view('admin.music.index', compact('musics', 'activeCount'));
     }
 
     public function create(): View

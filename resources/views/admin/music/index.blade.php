@@ -37,10 +37,7 @@
             @endif
 
             {{-- Stats --}}
-            @php
-                $totalCount  = $musics->total();
-                $activeCount = \App\Models\MusicLibrary::where('is_active', true)->count();
-            @endphp
+            @php $totalCount = $musics->total(); @endphp
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
                     <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $totalCount }}</p>
@@ -72,7 +69,7 @@
             @else
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach($musics as $music)
-                @php $usageCount = $music->events()->count(); @endphp
+                @php $usageCount = $music->events_count; @endphp
                 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 flex flex-col gap-3">
                     {{-- Header --}}
                     <div class="flex items-start justify-between gap-2">

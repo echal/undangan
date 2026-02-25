@@ -24,7 +24,6 @@ class Announcement extends Model
         'theme_id',
         'design_settings',
         'og_image',
-        'created_by',
     ];
 
     protected $casts = [
