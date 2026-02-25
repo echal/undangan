@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use App\Models\AnnouncementLog;
 use App\Models\Theme;
+use App\Services\OpenGraphImageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -121,6 +122,14 @@ class AnnouncementController extends Controller
     public function publish(Announcement $announcement): RedirectResponse
     {
         $announcement->update(['status' => 'published']);
+
+        // Generate OG image — wrapped in try/catch agar tidak block publish
+        try {
+            $path = app(OpenGraphImageService::class)->generate($announcement->fresh(['theme']));
+            $announcement->update(['og_image' => $path]);
+        } catch (\Throwable $e) {
+            \Log::warning('OG image generation failed: ' . $e->getMessage());
+        }
 
         AnnouncementLog::create([
             'announcement_id' => $announcement->id,

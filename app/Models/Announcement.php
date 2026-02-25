@@ -23,6 +23,7 @@ class Announcement extends Model
         'is_global_banner',
         'theme_id',
         'design_settings',
+        'og_image',
         'created_by',
     ];
 
