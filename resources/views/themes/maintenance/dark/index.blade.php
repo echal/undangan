@@ -57,10 +57,6 @@
                      alt="Logo" class="h-7 w-auto brightness-0 invert">
                 <span class="text-sm font-semibold">Undigi</span>
             </a>
-            <a href="{{ config('app.url') }}"
-               class="text-xs opacity-50 hover:opacity-100 transition">
-                ← Beranda
-            </a>
         </div>
 
         {{-- Main Card --}}

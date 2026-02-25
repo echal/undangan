@@ -52,9 +52,6 @@
                      alt="Logo" class="h-7 w-auto">
                 <span class="text-sm font-semibold text-slate-700">Undigi</span>
             </a>
-            <a href="{{ config('app.url') }}" class="text-xs text-slate-400 hover:text-slate-700 transition">
-                ← Kembali ke beranda
-            </a>
         </div>
 
         {{-- Severity Banner --}}
