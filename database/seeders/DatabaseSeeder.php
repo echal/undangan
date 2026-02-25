@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ThemeSeeder::class,
             TemplateSeeder::class,
+            AnnouncementSeeder::class,
+            AnnouncementThemeSeeder::class,
         ]);
     }
 }

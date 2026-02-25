@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Package;
+use App\Models\SystemSetting;
 use App\Models\Template;
 use App\Models\User;
 use Illuminate\Support\Carbon;
@@ -63,6 +64,10 @@ class DashboardController extends Controller
             ->limit(8)
             ->get();
 
+        // System settings (maintenance mode)
+        $systemSettings  = SystemSetting::current();
+        $maintenanceMode = $systemSettings->isInMaintenance();
+
         return view('admin.dashboard', compact(
             'totalEvents',
             'totalUsers',
@@ -74,6 +79,8 @@ class DashboardController extends Controller
             'weeklyData',
             'monthlyRevenue',
             'recentEvents',
+            'systemSettings',
+            'maintenanceMode',
         ));
     }
 }

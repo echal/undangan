@@ -28,6 +28,12 @@
                         </span>
                         @endif
                     </x-nav-link>
+                    <x-nav-link :href="route('admin.announcements.index')" :active="request()->routeIs('admin.announcements.*')">
+                        Pengumuman
+                    </x-nav-link>
+                    <x-nav-link :href="route('admin.system.edit')" :active="request()->routeIs('admin.system.*')">
+                        Sistem
+                    </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -84,6 +90,14 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            @if(Auth::user()->isAdmin())
+            <x-responsive-nav-link :href="route('admin.announcements.index')" :active="request()->routeIs('admin.announcements.*')">
+                Pengumuman
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.system.edit')" :active="request()->routeIs('admin.system.*')">
+                Sistem
+            </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

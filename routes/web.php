@@ -1,13 +1,16 @@
 <?php
 
+use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\PackageController;
+use App\Http\Controllers\Admin\SystemSettingController;
 use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\Admin\MusicLibraryController;
 use App\Http\Controllers\Admin\UserApprovalController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\InvitationController;
+use App\Http\Controllers\Public\StatusController;
 use App\Http\Controllers\User\EventController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +18,18 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('landing');
 })->name('landing');
+
+// ── Halaman Maintenance (public, tidak butuh auth) ──
+Route::get('/maintenance', function () {
+    $settings = \App\Models\SystemSetting::current();
+    return view('maintenance.index', [
+        'maintenanceEndAt' => $settings->maintenance_end_at,
+        'settings'         => $settings,
+    ]);
+})->name('maintenance');
+
+// ── Public Status Page per Announcement ──
+Route::get('/status/{slug}', [StatusController::class, 'show'])->name('status.show');
 
 // ── Status Akun (public — tidak butuh auth untuk rejected) ──
 Route::get('/account/pending', function () {
@@ -55,6 +70,16 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::put('/users/{user}/approve', [UserApprovalController::class, 'approve'])->name('users.approve');
     Route::put('/users/{user}/reject', [UserApprovalController::class, 'reject'])->name('users.reject');
     Route::delete('/users/{user}', [UserApprovalController::class, 'destroy'])->name('users.destroy');
+
+    // System Settings (Maintenance Mode)
+    Route::get('/system', [SystemSettingController::class, 'edit'])->name('system.edit');
+    Route::put('/system', [SystemSettingController::class, 'update'])->name('system.update');
+
+    // Announcements
+    Route::resource('announcements', AnnouncementController::class)->except(['show']);
+    Route::put('announcements/{announcement}/publish', [AnnouncementController::class, 'publish'])->name('announcements.publish');
+    Route::put('announcements/{announcement}/archive', [AnnouncementController::class, 'archive'])->name('announcements.archive');
+    Route::post('announcements/{announcement}/log', [AnnouncementController::class, 'addLog'])->name('announcements.log');
 });
 
 // Dashboard User + CRUD Event

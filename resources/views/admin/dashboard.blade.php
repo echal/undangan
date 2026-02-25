@@ -19,6 +19,76 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
 
             {{-- ============================================================
+                 SECTION 0: Status Sistem — Compact Summary Card
+                 Variables: $maintenanceMode (bool), $systemSettings (SystemSetting)
+                 ============================================================ --}}
+
+            {{-- Flash Messages --}}
+            @if (session('success'))
+            <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 text-sm text-green-700 dark:text-green-400">
+                <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                {{ session('success') }}
+            </div>
+            @endif
+            @if ($errors->any())
+            <div class="flex items-start gap-3 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 text-sm text-red-700 dark:text-red-400">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                {{ $errors->first() }}
+            </div>
+            @endif
+
+            {{-- Compact System Status Card --}}
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm px-5 py-4 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0
+                        {{ $maintenanceMode
+                            ? 'bg-red-100 dark:bg-red-900/40'
+                            : 'bg-emerald-100 dark:bg-emerald-900/40'
+                        }}">
+                        <svg class="w-4.5 h-4.5 {{ $maintenanceMode ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400' }}"
+                             fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wide">Status Sistem</p>
+                        @if ($maintenanceMode)
+                            <span class="inline-flex items-center gap-1.5 text-xs font-bold text-red-600 dark:text-red-400">
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                                MAINTENANCE
+                                @if ($systemSettings->maintenance_end_at)
+                                    <span class="font-normal text-gray-400">s/d {{ $systemSettings->maintenance_end_at->isoFormat('D MMM, HH:mm') }}</span>
+                                @endif
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                SISTEM AKTIF
+                            </span>
+                        @endif
+                    </div>
+                </div>
+                <a href="{{ route('admin.system.edit') }}"
+                   class="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg
+                          border border-gray-200 dark:border-gray-600
+                          text-gray-700 dark:text-gray-300
+                          hover:bg-gray-50 dark:hover:bg-gray-700
+                          transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Kelola Sistem
+                </a>
+            </div>
+
+            {{-- ============================================================
                  SECTION 1: Summary Stats Cards
                  Replace values with: $totalEvents, $totalUsers, etc.
                  ============================================================ --}}

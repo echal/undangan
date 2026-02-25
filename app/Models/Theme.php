@@ -11,6 +11,7 @@ class Theme extends Model
         'name',
         'slug',
         'folder',
+        'category',
         'preview_image',
         'is_active',
     ];
@@ -24,11 +25,22 @@ class Theme extends Model
         return $this->hasMany(Event::class);
     }
 
+    public function announcements(): HasMany
+    {
+        return $this->hasMany(Announcement::class);
+    }
+
     /**
      * Cek apakah view untuk tema ini tersedia.
+     * Invitation themes: themes.{folder}.index
+     * Announcement themes: themes.{category}.{folder}.index
      */
     public function viewExists(): bool
     {
+        if ($this->category && $this->category !== 'event') {
+            return view()->exists("themes.{$this->category}.{$this->folder}.index");
+        }
+
         return view()->exists("themes.{$this->folder}.index");
     }
 }
