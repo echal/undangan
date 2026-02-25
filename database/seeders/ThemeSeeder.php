@@ -78,5 +78,45 @@ class ThemeSeeder extends Seeder
         foreach ($themes as $theme) {
             Theme::updateOrCreate(['slug' => $theme['slug']], $theme);
         }
+
+        // Tema untuk Announcement (kategori maintenance & event)
+        $announcementThemes = [
+            [
+                'name'          => 'Maintenance Dark',
+                'slug'          => 'maintenance-dark',
+                'folder'        => 'dark',
+                'category'      => 'maintenance',
+                'preview_image' => null,
+                'is_active'     => true,
+            ],
+            [
+                'name'          => 'Maintenance Clean',
+                'slug'          => 'maintenance-clean',
+                'folder'        => 'clean',
+                'category'      => 'maintenance',
+                'preview_image' => null,
+                'is_active'     => true,
+            ],
+            [
+                'name'          => 'Event Elegant',
+                'slug'          => 'announcement-event-elegant',
+                'folder'        => 'elegant',
+                'category'      => 'event',
+                'preview_image' => null,
+                'is_active'     => true,
+            ],
+            [
+                'name'          => 'Event Classic',
+                'slug'          => 'announcement-event-classic',
+                'folder'        => 'classic',
+                'category'      => 'event',
+                'preview_image' => null,
+                'is_active'     => true,
+            ],
+        ];
+
+        foreach ($announcementThemes as $theme) {
+            Theme::updateOrCreate(['slug' => $theme['slug']], $theme);
+        }
     }
 }
