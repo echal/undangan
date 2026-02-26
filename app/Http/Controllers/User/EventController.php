@@ -348,7 +348,7 @@ class EventController extends Controller
                 ->with('error', 'Undangan sudah dipublikasikan sebelumnya.');
         }
 
-        $durationDays = $event->package->duration_days;
+        $durationDays = (int) $event->package->duration_days;
 
         $event->update([
             'is_published' => true,

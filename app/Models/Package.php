@@ -15,7 +15,9 @@ class Package extends Model
     ];
 
     protected $casts = [
-        'features' => 'array',
+        'features'      => 'array',
+        'price'         => 'integer',
+        'duration_days' => 'integer',
     ];
 
     public function events(): HasMany
