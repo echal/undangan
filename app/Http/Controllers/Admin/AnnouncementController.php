@@ -9,7 +9,10 @@ use App\Models\Theme;
 use App\Services\OpenGraphImageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class AnnouncementController extends Controller
 {
@@ -47,10 +50,16 @@ class AnnouncementController extends Controller
             'design_settings.show_timeline'     => ['nullable', 'boolean'],
             'design_settings.contact'           => ['nullable', 'string', 'max:255'],
             'design_settings.heading'           => ['nullable', 'string', 'max:255'],
-            'design_settings.logo_url'          => ['nullable', 'url', 'max:500'],
+            'logo_file'                         => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
         ]);
 
-        $validated['design_settings'] = $request->input('design_settings') ?: null;
+        $designSettings = $request->input('design_settings') ?: [];
+
+        if ($request->hasFile('logo_file')) {
+            $designSettings['logo_url'] = $this->uploadLogo($request->file('logo_file'));
+        }
+
+        $validated['design_settings'] = $designSettings ?: null;
 
         $announcement = new Announcement($validated);
         $announcement->status     = 'draft';
@@ -94,10 +103,27 @@ class AnnouncementController extends Controller
             'design_settings.show_timeline'     => ['nullable', 'boolean'],
             'design_settings.contact'           => ['nullable', 'string', 'max:255'],
             'design_settings.heading'           => ['nullable', 'string', 'max:255'],
-            'design_settings.logo_url'          => ['nullable', 'url', 'max:500'],
+            'logo_file'                         => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
         ]);
 
-        $validated['design_settings'] = $request->input('design_settings') ?: null;
+        $designSettings = $request->input('design_settings') ?: [];
+
+        if ($request->hasFile('logo_file')) {
+            // Hapus logo lama jika ada
+            $oldLogo = $announcement->design_settings['logo_url'] ?? null;
+            if ($oldLogo && str_starts_with($oldLogo, '/storage/')) {
+                Storage::disk('public')->delete(str_replace('/storage/', '', $oldLogo));
+            }
+            $designSettings['logo_url'] = $this->uploadLogo($request->file('logo_file'));
+        } else {
+            // Pertahankan logo lama jika tidak ada upload baru
+            $existingLogo = $announcement->design_settings['logo_url'] ?? null;
+            if ($existingLogo) {
+                $designSettings['logo_url'] = $existingLogo;
+            }
+        }
+
+        $validated['design_settings'] = $designSettings ?: null;
 
         $announcement->update($validated);
 
@@ -174,6 +200,21 @@ class AnnouncementController extends Controller
         return redirect()
             ->route('admin.announcements.edit', $announcement)
             ->with('success', 'Log berhasil ditambahkan.');
+    }
+
+    private function uploadLogo(\Illuminate\Http\UploadedFile $file): string
+    {
+        $manager = new ImageManager(new Driver());
+        $image   = $manager->read($file->getRealPath());
+
+        // Crop ke rasio 3:1 (landscape logo) dari center, resize max 480x160
+        $image->cover(480, 160);
+        $image->scaleDown(width: 480);
+
+        $filename = 'announcements/logos/' . uniqid('logo_') . '.webp';
+        Storage::disk('public')->put($filename, $image->toWebp(80));
+
+        return '/storage/' . $filename;
     }
 
     /** @return array{\Illuminate\Support\Collection, \Illuminate\Support\Collection} */

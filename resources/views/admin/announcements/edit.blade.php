@@ -51,7 +51,7 @@
 
                 {{-- Form Edit --}}
                 <div class="lg:col-span-2 space-y-0">
-                    <form action="{{ route('admin.announcements.update', $announcement) }}" method="POST"
+                    <form action="{{ route('admin.announcements.update', $announcement) }}" method="POST" enctype="multipart/form-data"
                           class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm divide-y divide-gray-100 dark:divide-gray-700">
                         @csrf @method('PUT')
 
@@ -125,13 +125,21 @@
                             </button>
 
                             <div x-show="open" x-transition class="space-y-4">
-                                {{-- Logo URL --}}
+                                {{-- Logo Upload --}}
                                 <div class="flex flex-col gap-1">
-                                    <label for="ds_logo_url" class="text-sm font-medium text-gray-600 dark:text-gray-300">URL Logo <span class="text-gray-400 font-normal">(opsional — tampil di atas halaman)</span></label>
-                                    <input type="url" id="ds_logo_url" name="design_settings[logo_url]"
-                                           value="{{ old('design_settings.logo_url', $ds['logo_url'] ?? '') }}"
-                                           placeholder="https://example.com/logo.png"
-                                           class="text-sm px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                                    <label for="logo_file" class="text-sm font-medium text-gray-600 dark:text-gray-300">
+                                        Logo <span class="text-gray-400 font-normal">(opsional — tampil di atas halaman)</span>
+                                    </label>
+                                    @if (!empty($ds['logo_url']))
+                                    <div class="flex items-center gap-3 p-2 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 mb-1">
+                                        <img src="{{ $ds['logo_url'] }}" alt="Logo saat ini" class="h-8 w-auto object-contain rounded">
+                                        <span class="text-xs text-gray-500 dark:text-gray-400">Logo saat ini — upload baru untuk mengganti</span>
+                                    </div>
+                                    @endif
+                                    <input type="file" id="logo_file" name="logo_file"
+                                           accept="image/jpeg,image/png,image/webp,image/svg+xml"
+                                           class="text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition file:mr-3 file:py-2 file:px-3 file:rounded-l-lg file:border-0 file:text-xs file:font-medium file:bg-indigo-50 file:text-indigo-700 dark:file:bg-indigo-900/30 dark:file:text-indigo-400 file:cursor-pointer">
+                                    <p class="text-xs text-gray-400">JPG, PNG, WEBP, SVG · Maks 2MB · Otomatis dikompres ke WebP 480×160px</p>
                                 </div>
 
                                 <div class="flex flex-col gap-1">

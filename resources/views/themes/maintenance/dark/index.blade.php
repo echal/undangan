@@ -22,7 +22,10 @@
         $showTimeline  = (bool) ($design['show_timeline']  ?? true);
         $contact  = $design['contact'] ?? null;
         $heading  = $design['heading'] ?? $announcement->title;
-        $logoUrl  = $design['logo_url'] ?? null;
+        $logoRaw  = $design['logo_url'] ?? null;
+        $logoUrl  = $logoRaw
+            ? (str_starts_with($logoRaw, '/storage/') ? rtrim(config('app.url'), '/') . $logoRaw : $logoRaw)
+            : null;
         $severityBar = match($announcement->severity) { 'critical' => '#ef4444', 'warning' => '#f59e0b', default => '#6366f1' };
         $severityLabel = match($announcement->severity) { 'critical' => 'GANGGUAN KRITIS', 'warning' => 'GANGGUAN SEBAGIAN', default => 'PEMBERITAHUAN' };
     @endphp
