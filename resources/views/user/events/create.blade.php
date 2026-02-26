@@ -107,6 +107,7 @@
                                         >
                                             <input type="radio" name="event_type" :value="type.value"
                                                    x-model="form.event_type"
+                                                   @change="form.theme_id = ''"
                                                    class="sr-only">
                                             <span class="text-2xl mb-2" x-text="type.icon"></span>
                                             <span class="text-xs font-medium text-center text-gray-700 dark:text-gray-300"
@@ -163,7 +164,22 @@
                             </div>
 
                             {{-- Tema Tampilan (opsional — sistem akan memilih tema sesuai jenis acara secara otomatis) --}}
-                            <div>
+                            @php
+                                $themeEventMap = [
+                                    'minimal'          => ['pernikahan'],
+                                    'sakura'           => ['pernikahan'],
+                                    'wedding-elegant'  => ['pernikahan'],
+                                    'ramadan-glow'     => ['buka_puasa'],
+                                    'workshop-ai'      => ['workshop'],
+                                    'workshop-modern'  => ['workshop'],
+                                    'government-clean' => ['kegiatan_kantor'],
+                                    'corporate-modern' => ['rapat'],
+                                    'executive-dark'   => ['pelatihan'],
+                                    'event-elegant'    => ['pernikahan','buka_puasa','workshop','kegiatan_kantor','rapat','pelatihan'],
+                                    'event-classic'    => ['pernikahan','buka_puasa','workshop','kegiatan_kantor','rapat','pelatihan'],
+                                ];
+                            @endphp
+                            <div x-show="!!form.event_type">
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     Tema Tampilan
                                     <span class="text-gray-400 text-xs font-normal">(opsional — otomatis sesuai jenis acara)</span>
@@ -171,8 +187,12 @@
                                 <select name="theme_id" x-model="form.theme_id"
                                         class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                                     <option value="">-- Gunakan Tema Otomatis --</option>
-                                    @foreach ($themes as $theme)
-                                        <option value="{{ $theme->id }}" {{ old('theme_id') == $theme->id ? 'selected' : '' }}>
+                                    @foreach ($themes->where('category', 'event') as $theme)
+                                        @php $allowed = $themeEventMap[$theme->slug] ?? []; @endphp
+                                        <option value="{{ $theme->id }}"
+                                                data-event-types="{{ implode(',', $allowed) }}"
+                                                x-show="!form.event_type || '{{ implode(',', $allowed) }}'.includes(form.event_type)"
+                                                {{ old('theme_id') == $theme->id ? 'selected' : '' }}>
                                             {{ $theme->name }}
                                         </option>
                                     @endforeach
