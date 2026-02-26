@@ -82,6 +82,7 @@ class AnnouncementController extends Controller
             'announcement_id' => $announcement->id,
             'message'         => 'Pengumuman dibuat.',
             'created_by'      => auth()->id(),
+            'created_at'      => now(),
         ]);
 
         return redirect()
@@ -155,6 +156,7 @@ class AnnouncementController extends Controller
             'announcement_id' => $announcement->id,
             'message'         => 'Pengumuman diperbarui.',
             'created_by'      => auth()->id(),
+            'created_at'      => now(),
         ]);
 
         return redirect()
@@ -187,6 +189,7 @@ class AnnouncementController extends Controller
             'announcement_id' => $announcement->id,
             'message'         => 'Pengumuman dipublikasikan.',
             'created_by'      => auth()->id(),
+            'created_at'      => now(),
         ]);
 
         return redirect()
@@ -202,6 +205,7 @@ class AnnouncementController extends Controller
             'announcement_id' => $announcement->id,
             'message'         => 'Pengumuman diarsipkan.',
             'created_by'      => auth()->id(),
+            'created_at'      => now(),
         ]);
 
         return redirect()
@@ -219,6 +223,7 @@ class AnnouncementController extends Controller
             'announcement_id' => $announcement->id,
             'message'         => $request->input('message'),
             'created_by'      => auth()->id(),
+            'created_at'      => now(),
         ]);
 
         return redirect()

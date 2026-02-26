@@ -139,7 +139,7 @@
             @endif
 
             {{-- Countdown --}}
-            @if ($showCountdown && $endTime && $announcement->computed_status === 'published')
+            @if ($showCountdown && $endTime && in_array($announcement->computed_status, ['published', 'resolved']))
             <div id="countdown-wrap" class="rounded-xl px-5 py-4 text-center"
                  style="background: color-mix(in srgb, {{ $primary }} 8%, transparent); border: 1px solid color-mix(in srgb, {{ $primary }} 20%, transparent);">
                 <p class="text-xs font-medium text-slate-400 mb-2">Estimasi Selesai Dalam</p>
@@ -203,7 +203,7 @@
 
     </div>
 
-    @if ($showCountdown && $endTime && $announcement->computed_status === 'published')
+    @if ($showCountdown && $endTime && in_array($announcement->computed_status, ['published', 'resolved']))
     <script>
     (function () {
         var target  = new Date("{{ $endTime }}").getTime();

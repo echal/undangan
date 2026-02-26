@@ -13,6 +13,7 @@ class AnnouncementLog extends Model
         'announcement_id',
         'message',
         'created_by',
+        'created_at',
     ];
 
     protected $casts = [
