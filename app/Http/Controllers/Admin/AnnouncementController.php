@@ -55,6 +55,18 @@ class AnnouncementController extends Controller
 
         $designSettings = $request->input('design_settings') ?: [];
 
+        // Parse datetime inputs sebagai WITA (datetime-local tidak kirim timezone info)
+        $tz = config('app.timezone');
+        if (!empty($validated['starts_at'])) {
+            $validated['starts_at'] = \Carbon\Carbon::parse($validated['starts_at'], $tz);
+        }
+        if (!empty($validated['ends_at'])) {
+            $validated['ends_at'] = \Carbon\Carbon::parse($validated['ends_at'], $tz);
+        }
+        if (!empty($designSettings['end_time'])) {
+            $designSettings['end_time'] = \Carbon\Carbon::parse($designSettings['end_time'], $tz)->toIso8601String();
+        }
+
         if ($request->hasFile('logo_file')) {
             $designSettings['logo_url'] = $this->uploadLogo($request->file('logo_file'));
         }
@@ -107,6 +119,18 @@ class AnnouncementController extends Controller
         ]);
 
         $designSettings = $request->input('design_settings') ?: [];
+
+        // Parse datetime inputs sebagai WITA (datetime-local tidak kirim timezone info)
+        $tz = config('app.timezone');
+        if (!empty($validated['starts_at'])) {
+            $validated['starts_at'] = \Carbon\Carbon::parse($validated['starts_at'], $tz);
+        }
+        if (!empty($validated['ends_at'])) {
+            $validated['ends_at'] = \Carbon\Carbon::parse($validated['ends_at'], $tz);
+        }
+        if (!empty($designSettings['end_time'])) {
+            $designSettings['end_time'] = \Carbon\Carbon::parse($designSettings['end_time'], $tz)->toIso8601String();
+        }
 
         if ($request->hasFile('logo_file')) {
             // Hapus logo lama jika ada

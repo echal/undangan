@@ -182,7 +182,7 @@
                                 <div class="flex flex-col gap-1">
                                     <label for="ds_end_time" class="text-sm font-medium text-gray-600 dark:text-gray-300">Waktu Selesai Countdown</label>
                                     <input type="datetime-local" id="ds_end_time" name="design_settings[end_time]"
-                                           value="{{ old('design_settings.end_time', isset($ds['end_time']) ? \Carbon\Carbon::parse($ds['end_time'])->format('Y-m-d\TH:i') : '') }}"
+                                           value="{{ old('design_settings.end_time', isset($ds['end_time']) ? \Carbon\Carbon::parse($ds['end_time'])->setTimezone(config('app.timezone'))->format('Y-m-d\TH:i') : '') }}"
                                            class="text-sm px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
                                 </div>
 
@@ -219,13 +219,13 @@
                                 <div class="flex flex-col gap-1">
                                     <label for="starts_at" class="text-sm font-medium text-gray-600 dark:text-gray-300">Mulai</label>
                                     <input type="datetime-local" id="starts_at" name="starts_at"
-                                           value="{{ old('starts_at', $announcement->starts_at?->format('Y-m-d\TH:i')) }}"
+                                           value="{{ old('starts_at', $announcement->starts_at?->setTimezone(config('app.timezone'))->format('Y-m-d\TH:i')) }}"
                                            class="text-sm px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
                                 </div>
                                 <div class="flex flex-col gap-1">
                                     <label for="ends_at" class="text-sm font-medium text-gray-600 dark:text-gray-300">Estimasi Selesai</label>
                                     <input type="datetime-local" id="ends_at" name="ends_at"
-                                           value="{{ old('ends_at', $announcement->ends_at?->format('Y-m-d\TH:i')) }}"
+                                           value="{{ old('ends_at', $announcement->ends_at?->setTimezone(config('app.timezone'))->format('Y-m-d\TH:i')) }}"
                                            class="text-sm px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
                                 </div>
                             </div>
