@@ -370,6 +370,10 @@ class EventController extends Controller
 
     private function authorizeEvent(Event $event): void
     {
+        if (auth()->user()->role === 'admin') {
+            return;
+        }
+
         if ($event->user_id !== auth()->id()) {
             abort(403, 'Anda tidak memiliki akses ke undangan ini.');
         }
