@@ -31,7 +31,7 @@ class PackageController extends Controller
             'features'      => ['nullable', 'string'],
         ]);
 
-        $validated['features'] = $this->parseFeatures($request->input('features', ''));
+        $validated['features'] = $this->parseFeatures($request->input('features') ?? '');
 
         Package::create($validated);
 
@@ -53,7 +53,7 @@ class PackageController extends Controller
             'features'      => ['nullable', 'string'],
         ]);
 
-        $validated['features'] = $this->parseFeatures($request->input('features', ''));
+        $validated['features'] = $this->parseFeatures($request->input('features') ?? '');
 
         $package->update($validated);
 
