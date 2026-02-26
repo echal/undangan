@@ -96,6 +96,15 @@
                     </button>
 
                     <div x-show="open" x-transition class="space-y-4">
+                        {{-- Logo URL --}}
+                        <div class="flex flex-col gap-1">
+                            <label for="ds_logo_url" class="text-sm font-medium text-gray-600 dark:text-gray-300">URL Logo <span class="text-gray-400 font-normal">(opsional — tampil di atas halaman)</span></label>
+                            <input type="url" id="ds_logo_url" name="design_settings[logo_url]"
+                                   value="{{ old('design_settings.logo_url') }}"
+                                   placeholder="https://example.com/logo.png"
+                                   class="text-sm px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                        </div>
+
                         {{-- Heading override --}}
                         <div class="flex flex-col gap-1">
                             <label for="ds_heading" class="text-sm font-medium text-gray-600 dark:text-gray-300">Heading Override <span class="text-gray-400 font-normal">(opsional, default: judul)</span></label>

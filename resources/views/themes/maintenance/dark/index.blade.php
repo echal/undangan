@@ -17,10 +17,12 @@
         $endTime  = isset($design['end_time']) && $design['end_time']
             ? \Carbon\Carbon::parse($design['end_time'])->toIso8601String()
             : ($announcement->ends_at?->toIso8601String() ?? null);
+        $startTime = $announcement->starts_at?->toIso8601String() ?? null;
         $showCountdown = (bool) ($design['show_countdown'] ?? true);
         $showTimeline  = (bool) ($design['show_timeline']  ?? true);
         $contact  = $design['contact'] ?? null;
         $heading  = $design['heading'] ?? $announcement->title;
+        $logoUrl  = $design['logo_url'] ?? null;
         $severityBar = match($announcement->severity) { 'critical' => '#ef4444', 'warning' => '#f59e0b', default => '#6366f1' };
         $severityLabel = match($announcement->severity) { 'critical' => 'GANGGUAN KRITIS', 'warning' => 'GANGGUAN SEBAGIAN', default => 'PEMBERITAHUAN' };
     @endphp
@@ -40,6 +42,15 @@
         .card-bg { background: color-mix(in srgb, white 5%, transparent); border: 1px solid color-mix(in srgb, white 10%, transparent); }
         .countdown-card { background: color-mix(in srgb, var(--primary) 10%, transparent); border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent); }
         .font-mono-num { font-feature-settings: "tnum"; font-variant-numeric: tabular-nums; }
+        .logo-glow { filter: drop-shadow(0 0 16px color-mix(in srgb, {{ $primary }} 60%, transparent)); }
+        @keyframes progress-shine { 0%{background-position:200% center;} 100%{background-position:-200% center;} }
+        .progress-bar {
+            background: linear-gradient(90deg, {{ $primary }}, color-mix(in srgb, {{ $primary }} 60%, white), {{ $primary }});
+            background-size: 200% auto;
+            animation: progress-shine 3s linear infinite;
+            transition: width 1s linear;
+        }
+        .progress-track { background: color-mix(in srgb, white 8%, transparent); }
     </style>
 </head>
 <body class="min-h-screen">
@@ -49,14 +60,19 @@
 
     <div class="max-w-2xl mx-auto px-4 sm:px-6 py-10 space-y-8">
 
-        {{-- Header --}}
-        <div class="flex items-center justify-between">
-            <a href="{{ config('app.url') }}" class="flex items-center gap-2 opacity-70 hover:opacity-100 transition">
+        {{-- Logo Center --}}
+        <div class="flex justify-center pt-2 pb-1">
+            @if ($logoUrl)
+                <img src="{{ $logoUrl }}"
+                     onerror="this.src='{{ config('app.url') }}/images/logo/undigi-logo.png'"
+                     alt="{{ config('app.name') }}"
+                     class="logo-glow w-auto max-w-[120px] sm:max-w-[160px] max-h-16 object-contain brightness-0 invert">
+            @else
                 <img src="{{ config('app.url') }}/images/logo/undigi-logo.png"
                      onerror="this.style.display='none'"
-                     alt="Logo" class="h-7 w-auto brightness-0 invert">
-                <span class="text-sm font-semibold">Undigi</span>
-            </a>
+                     alt="{{ config('app.name') }}"
+                     class="logo-glow w-auto max-w-[120px] sm:max-w-[160px] max-h-16 object-contain brightness-0 invert">
+            @endif
         </div>
 
         {{-- Main Card --}}
@@ -114,6 +130,18 @@
                 </div>
                 <p id="countdown-done" class="hidden text-green-400 font-semibold mt-2">✓ Sistem Sudah Kembali Online</p>
             </div>
+            {{-- Progress Bar --}}
+            @if ($startTime)
+            <div>
+                <div class="flex justify-between text-xs opacity-40 mb-1.5">
+                    <span>Progress Pemeliharaan</span>
+                    <span id="progress-pct">0%</span>
+                </div>
+                <div class="w-full progress-track rounded-full h-1.5 overflow-hidden">
+                    <div id="progress-bar" class="progress-bar h-1.5 rounded-full" style="width:0%"></div>
+                </div>
+            </div>
+            @endif
             @endif
 
             {{-- Body --}}
@@ -166,15 +194,30 @@
     <script>
     (function () {
         var target  = new Date("{{ $endTime }}").getTime();
+        var start   = {{ $startTime ? 'new Date("'.$startTime.'").getTime()' : 'null' }};
         var display = document.getElementById('countdown-display');
         var done    = document.getElementById('countdown-done');
-        var wrap    = document.getElementById('countdown-wrap');
+        var bar     = document.getElementById('progress-bar');
+        var pct     = document.getElementById('progress-pct');
 
         function tick() {
-            var diff = target - Date.now();
+            var now  = Date.now();
+            var diff = target - now;
+
+            // Progress bar
+            if (bar && start) {
+                var total    = target - start;
+                var elapsed  = now - start;
+                var progress = total > 0 ? Math.min(100, Math.max(0, (elapsed / total) * 100)) : 0;
+                bar.style.width = progress.toFixed(1) + '%';
+                if (pct) pct.textContent = Math.floor(progress) + '%';
+            }
+
             if (diff <= 0) {
                 if (display) display.style.display = 'none';
                 if (done) done.classList.remove('hidden');
+                if (bar) bar.style.width = '100%';
+                if (pct) pct.textContent = '100%';
                 return;
             }
             var h = Math.floor(diff / 3600000);

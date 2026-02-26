@@ -47,6 +47,7 @@ class AnnouncementController extends Controller
             'design_settings.show_timeline'     => ['nullable', 'boolean'],
             'design_settings.contact'           => ['nullable', 'string', 'max:255'],
             'design_settings.heading'           => ['nullable', 'string', 'max:255'],
+            'design_settings.logo_url'          => ['nullable', 'url', 'max:500'],
         ]);
 
         $validated['design_settings'] = $request->input('design_settings') ?: null;
@@ -93,6 +94,7 @@ class AnnouncementController extends Controller
             'design_settings.show_timeline'     => ['nullable', 'boolean'],
             'design_settings.contact'           => ['nullable', 'string', 'max:255'],
             'design_settings.heading'           => ['nullable', 'string', 'max:255'],
+            'design_settings.logo_url'          => ['nullable', 'url', 'max:500'],
         ]);
 
         $validated['design_settings'] = $request->input('design_settings') ?: null;
