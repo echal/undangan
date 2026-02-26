@@ -17,6 +17,7 @@ class UserApprovalController extends Controller
         $status = $request->query('status', 'pending');
 
         $users = User::where('role', 'user')
+            ->withCount('events')
             ->when($status !== 'all', fn ($q) => $q->where('status', $status))
             ->latest()
             ->paginate(20);
