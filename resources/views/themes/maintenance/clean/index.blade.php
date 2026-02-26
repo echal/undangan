@@ -143,7 +143,7 @@
             <div id="countdown-wrap" class="rounded-xl px-5 py-4 text-center"
                  style="background: color-mix(in srgb, {{ $primary }} 8%, transparent); border: 1px solid color-mix(in srgb, {{ $primary }} 20%, transparent);">
                 <p class="text-xs font-medium text-slate-400 mb-2">Estimasi Selesai Dalam</p>
-                <div id="countdown-display" class="font-mono-num text-4xl font-bold accent">--:--:--</div>
+                <div id="countdown-display" class="font-mono-num text-4xl font-bold accent" style="visibility:hidden"></div>
                 <p id="countdown-done" class="hidden text-green-600 font-semibold text-sm mt-2">✓ Sistem Sudah Kembali Online</p>
             </div>
             {{-- Progress Bar --}}
@@ -237,6 +237,7 @@
             var m = Math.floor((diff % 3600000) / 60000);
             var s = Math.floor((diff % 60000) / 1000);
             display.textContent = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+            display.style.visibility = 'visible';
         }
         tick();
         setInterval(tick, 1000);

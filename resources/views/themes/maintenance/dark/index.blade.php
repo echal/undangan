@@ -128,8 +128,7 @@
             @if ($showCountdown && $endTime && in_array($announcement->computed_status, ['published', 'resolved']))
             <div id="countdown-wrap" class="countdown-card rounded-xl p-5 text-center">
                 <p class="text-xs font-semibold uppercase tracking-widest opacity-50 mb-3">Estimasi Selesai Dalam</p>
-                <div id="countdown-display" class="font-mono-num text-5xl sm:text-6xl font-bold tracking-tight accent">
-                    --:--:--
+                <div id="countdown-display" class="font-mono-num text-5xl sm:text-6xl font-bold tracking-tight accent" style="visibility:hidden">
                 </div>
                 <p id="countdown-done" class="hidden text-green-400 font-semibold mt-2">✓ Sistem Sudah Kembali Online</p>
             </div>
@@ -227,6 +226,7 @@
             var m = Math.floor((diff % 3600000) / 60000);
             var s = Math.floor((diff % 60000) / 1000);
             display.textContent = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+            display.style.visibility = 'visible';
         }
         tick();
         setInterval(tick, 1000);
