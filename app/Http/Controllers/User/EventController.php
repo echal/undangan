@@ -374,7 +374,7 @@ class EventController extends Controller
             return;
         }
 
-        if ($event->user_id !== auth()->id()) {
+        if ((int) $event->user_id !== (int) auth()->id()) {
             abort(403, 'Anda tidak memiliki akses ke undangan ini.');
         }
     }
