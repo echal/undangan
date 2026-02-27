@@ -196,7 +196,7 @@
     <script>
     (function () {
         var target  = new Date("{{ $endTime }}").getTime();
-        var start   = {{ $startTime ? 'new Date("'.$startTime.'").getTime()' : 'null' }};
+        var start   = {!! $startTime ? 'new Date("'.$startTime.'").getTime()' : 'null' !!};
         var display = document.getElementById('countdown-display');
         var done    = document.getElementById('countdown-done');
         var bar     = document.getElementById('progress-bar');
