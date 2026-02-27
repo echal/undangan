@@ -14,7 +14,7 @@
         $primary  = $design['primary_color']    ?? '#6366f1';
         $bg       = $design['background_color'] ?? '#020617';
         $textClr  = $design['text_color']       ?? '#f1f5f9';
-        $endTime  = isset($design['end_time']) && $design['end_time']
+        $endTime  = (isset($design['end_time']) && is_string($design['end_time']) && strlen(trim($design['end_time'])) > 0)
             ? \Carbon\Carbon::parse($design['end_time'])->utc()->toIso8601String()
             : ($announcement->ends_at?->utc()->toIso8601String() ?? null);
         $startTime = $announcement->starts_at?->utc()->toIso8601String() ?? null;
@@ -202,8 +202,14 @@
         var bar     = document.getElementById('progress-bar');
         var pct     = document.getElementById('progress-pct');
 
-        // Guard: jika date invalid (NaN) tidak jalankan
-        if (isNaN(target)) return;
+        // Guard: jika date invalid (NaN) sembunyikan box dan keluar
+        if (isNaN(target)) {
+            var wrap = document.getElementById('countdown-wrap');
+            if (wrap) wrap.style.display = 'none';
+            var pb = document.getElementById('progress-bar');
+            if (pb) pb.closest('div').style.display = 'none';
+            return;
+        }
 
         function tick() {
             var now  = Date.now();
