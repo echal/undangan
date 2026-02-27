@@ -15,9 +15,9 @@
         $bg       = $design['background_color'] ?? '#020617';
         $textClr  = $design['text_color']       ?? '#f1f5f9';
         $endTime  = isset($design['end_time']) && $design['end_time']
-            ? \Carbon\Carbon::parse($design['end_time'])->toIso8601String()
-            : ($announcement->ends_at?->toIso8601String() ?? null);
-        $startTime = $announcement->starts_at?->toIso8601String() ?? null;
+            ? \Carbon\Carbon::parse($design['end_time'])->utc()->toIso8601String()
+            : ($announcement->ends_at?->utc()->toIso8601String() ?? null);
+        $startTime = $announcement->starts_at?->utc()->toIso8601String() ?? null;
         $showCountdown = (bool) ($design['show_countdown'] ?? true);
         $showTimeline  = (bool) ($design['show_timeline']  ?? true);
         $contact  = $design['contact'] ?? null;
@@ -175,8 +175,8 @@
                     </div>
                     <div class="pb-5 flex-1 min-w-0">
                         <p class="text-sm">{{ $log->message }}</p>
-                        <p class="text-xs opacity-40 mt-1">
-                            {{ $log->created_at->setTimezone(config('app.timezone'))->isoFormat('D MMM YYYY, HH:mm') }}
+                        <p class="text-xs opacity-40 mt-1 log-time" data-ts="{{ $log->created_at->utc()->timestamp }}">
+                            {{ $log->created_at->utc()->timestamp }}
                         </p>
                     </div>
                 </div>
@@ -202,12 +202,14 @@
         var bar     = document.getElementById('progress-bar');
         var pct     = document.getElementById('progress-pct');
 
+        // Guard: jika date invalid (NaN) tidak jalankan
+        if (isNaN(target)) return;
+
         function tick() {
             var now  = Date.now();
             var diff = target - now;
 
-            // Progress bar
-            if (bar && start) {
+            if (bar && start && !isNaN(start)) {
                 var total    = target - start;
                 var elapsed  = now - start;
                 var progress = total > 0 ? Math.min(100, Math.max(0, (elapsed / total) * 100)) : 0;
@@ -233,6 +235,24 @@
     })();
     </script>
     @endif
+
+    {{-- Render timeline timestamps di frontend → tidak bergantung pada PHP/server timezone --}}
+    <script>
+    (function () {
+        var TZ = 'Asia/Makassar';
+        var fmt = new Intl.DateTimeFormat('id-ID', {
+            timeZone: TZ,
+            day: 'numeric', month: 'short', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', hour12: false
+        });
+        document.querySelectorAll('.log-time').forEach(function (el) {
+            var ts = parseInt(el.dataset.ts, 10);
+            if (!isNaN(ts)) {
+                el.textContent = fmt.format(new Date(ts * 1000));
+            }
+        });
+    })();
+    </script>
 
 </body>
 </html>
