@@ -5,17 +5,19 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Guest;
+use App\Models\NoticeReport;
 use App\Models\Wish;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class InvitationController extends Controller
 {
     public function show(string $slug): View
     {
-        $event = Event::with(['wishes' => fn ($q) => $q->latest(), 'guests', 'theme'])
+        $event = Event::with(['wishes' => fn ($q) => $q->latest(), 'guests', 'theme', 'noticeReports' => fn ($q) => $q->latest()])
             ->where('slug', $slug)
             ->where('is_published', true)
             ->where(fn ($q) => $q->whereNull('expired_at')->orWhere('expired_at', '>', now()))
@@ -119,5 +121,34 @@ class InvitationController extends Controller
 
         return redirect()->route('invitation.show', $slug)
             ->with('wish_success', 'Ucapan Anda berhasil dikirim. Semoga bahagia selalu!');
+    }
+
+    public function report(Request $request, string $slug): RedirectResponse
+    {
+        $event = Event::where('slug', $slug)
+            ->where('is_published', true)
+            ->where(fn ($q) => $q->whereNull('expired_at')->orWhere('expired_at', '>', now()))
+            ->firstOrFail();
+
+        $validated = $request->validate([
+            'nama'       => ['required', 'string', 'max:255'],
+            'nip'        => [
+                'required', 'string', 'max:30',
+                Rule::unique('notice_reports')->where('event_id', $event->id),
+            ],
+            'unit_kerja' => ['required', 'string', 'max:255'],
+        ], [
+            'nama.required'       => 'Nama wajib diisi.',
+            'nip.required'        => 'NIP wajib diisi.',
+            'nip.unique'          => 'NIP ini sudah tercatat melaporkan pada pemberitahuan ini.',
+            'unit_kerja.required' => 'Unit kerja wajib diisi.',
+        ]);
+
+        $validated['event_id'] = $event->id;
+
+        NoticeReport::create($validated);
+
+        return redirect()->route('invitation.show', $slug)
+            ->with('report_success', 'Konfirmasi pelaporan Anda berhasil dicatat. Terima kasih!');
     }
 }

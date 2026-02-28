@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Exports\InvitationGuestExport;
+use App\Exports\NoticeReportExport;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\MusicLibrary;
@@ -49,7 +50,7 @@ class EventController extends Controller
         ]);
 
         $validated = $request->validate([
-            'event_type'   => ['required', 'string', 'in:pernikahan,buka_puasa,workshop,kegiatan_kantor,rapat,pelatihan'],
+            'event_type'   => ['required', 'string', 'in:pernikahan,buka_puasa,workshop,kegiatan_kantor,rapat,pelatihan,official_notice'],
             'title'        => ['required', 'string', 'max:255'],
             'package_id'   => ['required', 'exists:packages,id'],
             'theme_id'     => ['nullable', 'exists:themes,id'],
@@ -81,11 +82,19 @@ class EventController extends Controller
             'event_data.speaker2_role'    => ['nullable', 'string', 'max:100'],
             'event_data.mc_name'          => ['nullable', 'string', 'max:255'],
             'event_data.mc_title'         => ['nullable', 'string', 'max:255'],
+            'event_data.deadline'         => ['nullable', 'string', 'max:50'],
+            'event_data.notice_number'    => ['nullable', 'string', 'max:100'],
+            'event_data.notice_level'     => ['nullable', 'string', 'in:normal,important,urgent'],
+            'event_data.issuing_unit'     => ['nullable', 'string', 'max:255'],
+            'event_data.zi_commitment'    => ['nullable', 'string', 'max:1000'],
+            'event_data.contact_person'   => ['nullable', 'string', 'max:255'],
             'speaker1_photo'              => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'speaker2_photo'              => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'mc_photo'                    => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'host_photo'                  => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'music_id'                    => ['nullable', 'integer', 'exists:music_library,id'],
+            'total_target_asn'            => ['nullable', 'integer', 'min:0'],
+            'official_document'           => ['nullable', 'file', 'mimes:pdf', 'max:3072'],
         ], [
             'maps_link.url'                      => 'Link Google Maps harus berupa URL yang valid (contoh: https://maps.google.com/...).',
             'event_data.livestream_link.url'     => 'Link Live Stream harus berupa URL yang valid (contoh: https://youtube.com/live/...).',
@@ -103,6 +112,8 @@ class EventController extends Controller
             'gallery_images.*.mimes'    => 'Format galeri: JPG, JPEG, PNG, atau WEBP.',
             'gallery_images.*.max'      => 'Ukuran setiap foto galeri maksimal 2MB.',
             'music_id.exists'           => 'Pilihan musik tidak valid.',
+            'official_document.mimes'   => 'Dokumen resmi harus berformat PDF.',
+            'official_document.max'     => 'Ukuran dokumen resmi maksimal 3MB.',
         ]);
 
         // Auto-assign Template by event_type (user never selects template manually)
@@ -123,6 +134,7 @@ class EventController extends Controller
                 'kegiatan_kantor' => 'government-clean',
                 'rapat'           => 'corporate-modern',
                 'pelatihan'       => 'executive-dark',
+                'official_notice' => 'official-blue',
             ];
             $autoTheme = Theme::where('slug', $themeSlugMap[$validated['event_type']])
                 ->where('is_active', true)
@@ -136,6 +148,17 @@ class EventController extends Controller
         $validated['slug']         = Str::slug($validated['title']) . '-' . uniqid();
         $validated['rsvp_enabled'] = $request->input('rsvp_enabled') === '1';
         $validated['groom_name']   = $validated['groom_name'] ?? null;
+
+        // Extract notice_level from event_data to dedicated column
+        if (!empty($validated['event_data']['notice_level'])) {
+            $validated['notice_level'] = $validated['event_data']['notice_level'];
+        }
+
+        // Handle official document (PDF) upload
+        if ($request->hasFile('official_document')) {
+            $validated['official_document'] = $request->file('official_document')
+                ->store('events/documents', 'public');
+        }
 
         // Handle banner image upload
         if ($request->hasFile('banner_image')) {
@@ -249,11 +272,19 @@ class EventController extends Controller
             'event_data.speaker2_role'    => ['nullable', 'string', 'max:100'],
             'event_data.mc_name'          => ['nullable', 'string', 'max:255'],
             'event_data.mc_title'         => ['nullable', 'string', 'max:255'],
+            'event_data.deadline'         => ['nullable', 'string', 'max:50'],
+            'event_data.notice_number'    => ['nullable', 'string', 'max:100'],
+            'event_data.notice_level'     => ['nullable', 'string', 'in:normal,important,urgent'],
+            'event_data.issuing_unit'     => ['nullable', 'string', 'max:255'],
+            'event_data.zi_commitment'    => ['nullable', 'string', 'max:1000'],
+            'event_data.contact_person'   => ['nullable', 'string', 'max:255'],
             'speaker1_photo'              => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'speaker2_photo'              => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'mc_photo'                    => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'host_photo'                  => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'music_id'                    => ['nullable', 'integer', 'exists:music_library,id'],
+            'total_target_asn'            => ['nullable', 'integer', 'min:0'],
+            'official_document'           => ['nullable', 'file', 'mimes:pdf', 'max:3072'],
         ], [
             'maps_link.url'                  => 'Link Google Maps harus berupa URL yang valid.',
             'event_data.livestream_link.url' => 'Link Live Stream harus berupa URL yang valid.',
@@ -265,6 +296,8 @@ class EventController extends Controller
             'gallery_images.*.mimes'         => 'Format galeri: JPG, JPEG, PNG, atau WEBP.',
             'gallery_images.*.max'           => 'Ukuran setiap foto galeri maksimal 2MB.',
             'music_id.exists'                => 'Pilihan musik tidak valid.',
+            'official_document.mimes'        => 'Dokumen resmi harus berformat PDF.',
+            'official_document.max'          => 'Ukuran dokumen resmi maksimal 3MB.',
         ]);
 
         // ── BANNER: replace old file if new one uploaded ──────────────────
@@ -292,6 +325,17 @@ class EventController extends Controller
             $validated['gallery_images'] = $galleryPaths;
         } else {
             unset($validated['gallery_images']);
+        }
+
+        // ── OFFICIAL DOCUMENT (PDF) ───────────────────────────────────────
+        if ($request->hasFile('official_document')) {
+            if ($event->official_document) {
+                Storage::disk('public')->delete($event->official_document);
+            }
+            $validated['official_document'] = $request->file('official_document')
+                ->store('events/documents', 'public');
+        } else {
+            unset($validated['official_document']);
         }
 
         // ── RSVP toggle ───────────────────────────────────────────────────
@@ -322,6 +366,11 @@ class EventController extends Controller
         // Clean up event_data nulls and set result
         $eventData = array_filter($eventData ?? [], fn ($v) => $v !== null && $v !== '');
         $validated['event_data'] = empty($eventData) ? null : $eventData;
+
+        // Extract notice_level from event_data to dedicated column
+        if (!empty($validated['event_data']['notice_level'])) {
+            $validated['notice_level'] = $validated['event_data']['notice_level'];
+        }
 
         $event->update($validated);
 
@@ -366,6 +415,15 @@ class EventController extends Controller
         $fileName = 'rekap-tamu-' . $event->slug . '.xlsx';
 
         return Excel::download(new InvitationGuestExport($event), $fileName);
+    }
+
+    public function exportNotices(Event $event): BinaryFileResponse
+    {
+        $this->authorizeEvent($event);
+
+        $fileName = 'rekap-pelaporan-' . $event->slug . '.xlsx';
+
+        return Excel::download(new NoticeReportExport($event), $fileName);
     }
 
     private function authorizeEvent(Event $event): void

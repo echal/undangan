@@ -175,8 +175,9 @@
                                     'government-clean' => ['kegiatan_kantor'],
                                     'corporate-modern' => ['rapat'],
                                     'executive-dark'   => ['pelatihan'],
-                                    'event-elegant'    => ['pernikahan','buka_puasa','workshop','kegiatan_kantor','rapat','pelatihan'],
-                                    'event-classic'    => ['pernikahan','buka_puasa','workshop','kegiatan_kantor','rapat','pelatihan'],
+                                    'official-blue'    => ['official_notice'],
+                                    'event-elegant'    => ['pernikahan','buka_puasa','workshop','kegiatan_kantor','rapat','pelatihan','official_notice'],
+                                    'event-classic'    => ['pernikahan','buka_puasa','workshop','kegiatan_kantor','rapat','pelatihan','official_notice'],
                                 ];
                             @endphp
                             <div x-show="!!form.event_type">
@@ -721,6 +722,117 @@
                                     </div>
                                 </template>
 
+                                {{-- [KONDISIONAL] Fields Pemberitahuan Kedinasan --}}
+                                <template x-if="form.event_type === 'official_notice'">
+                                    <div class="space-y-4">
+
+                                        {{-- Total Target ASN --}}
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Total Target ASN <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="number" name="total_target_asn" min="0"
+                                                   x-model="form.event_data.total_target_asn"
+                                                   placeholder="Contoh: 120"
+                                                   class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                                                   value="{{ old('total_target_asn') }}">
+                                            <p class="mt-1 text-xs text-gray-400">Jumlah total ASN yang wajib melaporkan.</p>
+                                        </div>
+
+                                        {{-- Nomor Surat --}}
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Nomor Surat <span class="text-gray-400 text-xs">(opsional)</span>
+                                            </label>
+                                            <input type="text" name="event_data[notice_number]"
+                                                   x-model="form.event_data.notice_number"
+                                                   placeholder="Contoh: 001/UN.1/HM/2026"
+                                                   class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm font-mono"
+                                                   value="{{ old('event_data.notice_number') }}">
+                                        </div>
+
+                                        {{-- Tingkat Urgensi --}}
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                Tingkat Urgensi
+                                            </label>
+                                            <div class="grid grid-cols-3 gap-3">
+                                                <template x-for="lvl in [{v:'normal',l:'Normal',c:'blue'},{v:'important',l:'Penting',c:'amber'},{v:'urgent',l:'Mendesak',c:'red'}]" :key="lvl.v">
+                                                    <label class="relative flex flex-col items-center gap-1 p-3 rounded-xl border-2 cursor-pointer transition-all"
+                                                           :class="form.event_data.notice_level === lvl.v
+                                                               ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30'
+                                                               : 'border-gray-200 dark:border-gray-600 hover:border-indigo-300'">
+                                                        <input type="radio" name="event_data[notice_level]"
+                                                               :value="lvl.v" x-model="form.event_data.notice_level" class="sr-only">
+                                                        <span x-text="lvl.l" class="text-sm font-semibold text-gray-700 dark:text-gray-300"></span>
+                                                    </label>
+                                                </template>
+                                            </div>
+                                        </div>
+
+                                        {{-- Batas Waktu / Deadline --}}
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Batas Waktu / Deadline <span class="text-gray-400 text-xs">(opsional)</span>
+                                            </label>
+                                            <input type="text" name="event_data[deadline]"
+                                                   x-model="form.event_data.deadline"
+                                                   placeholder="Contoh: 31 Maret 2026 pukul 16.00 WIB"
+                                                   class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                                                   value="{{ old('event_data.deadline') }}">
+                                        </div>
+
+                                        {{-- Unit Penerbit --}}
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Unit / Bagian Penerbit <span class="text-gray-400 text-xs">(opsional)</span>
+                                            </label>
+                                            <input type="text" name="event_data[issuing_unit]"
+                                                   x-model="form.event_data.issuing_unit"
+                                                   placeholder="Biro Umum, Sekretariat, dsb."
+                                                   class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                                                   value="{{ old('event_data.issuing_unit') }}">
+                                        </div>
+
+                                        {{-- Isi Pemberitahuan --}}
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Isi Pemberitahuan <span class="text-gray-400 text-xs">(opsional)</span>
+                                            </label>
+                                            <textarea name="event_data[description]"
+                                                      x-model="form.event_data.description"
+                                                      rows="5"
+                                                      placeholder="Jelaskan isi pemberitahuan secara lengkap..."
+                                                      class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">{{ old('event_data.description') }}</textarea>
+                                        </div>
+
+                                        {{-- Komitmen ZI/WBK/WBBM --}}
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Komitmen ZI / WBK / WBBM <span class="text-gray-400 text-xs">(opsional)</span>
+                                            </label>
+                                            <textarea name="event_data[zi_commitment]"
+                                                      x-model="form.event_data.zi_commitment"
+                                                      rows="3"
+                                                      placeholder="Tuliskan komitmen zona integritas instansi..."
+                                                      class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">{{ old('event_data.zi_commitment') }}</textarea>
+                                        </div>
+
+                                        {{-- Narahubung --}}
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Narahubung / Kontak <span class="text-gray-400 text-xs">(opsional)</span>
+                                            </label>
+                                            <input type="text" name="event_data[contact_person]"
+                                                   x-model="form.event_data.contact_person"
+                                                   placeholder="Nama dan nomor HP narahubung"
+                                                   class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                                                   value="{{ old('event_data.contact_person') }}">
+                                        </div>
+
+                                    </div>
+                                </template>
+
                             </div>{{-- end unified fields --}}
                         </div>
 
@@ -897,6 +1009,40 @@
                                     <p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
+
+                            {{-- Upload Dokumen Resmi (PDF) — khusus official_notice --}}
+                            <div x-show="form.event_type === 'official_notice'" class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Dokumen Resmi (PDF)
+                                    <span class="text-gray-400 text-xs">(opsional — maks. 3MB)</span>
+                                </label>
+                                <div class="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-5 text-center cursor-pointer hover:border-indigo-400 transition-colors"
+                                     @click="$refs.pdfInput.click()">
+                                    <div x-show="!pdfFileName">
+                                        <svg class="mx-auto h-10 w-10 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                        </svg>
+                                        <p class="text-sm text-gray-500">Klik untuk upload surat / nota dinas / SK</p>
+                                        <p class="text-xs text-gray-400 mt-1">PDF saja, maks. 3MB</p>
+                                    </div>
+                                    <div x-show="pdfFileName" class="flex items-center justify-center gap-3">
+                                        <svg class="w-8 h-8 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM11 14.5h2v1h-2v-1zm0-3h2v2.5h-2V11.5zm-3 3h1.5v1H8v-1zm0-3h1.5v2.5H8V11.5zm7 3h1.5v1H15v-1zm0-3h1.5v2.5H15V11.5z"/>
+                                        </svg>
+                                        <div class="text-left">
+                                            <p class="text-sm font-medium text-gray-700 dark:text-gray-300" x-text="pdfFileName"></p>
+                                            <p class="text-xs text-gray-400 mt-0.5">Klik untuk ganti file</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="file" name="official_document" accept="application/pdf"
+                                       x-ref="pdfInput" class="hidden"
+                                       @change="handlePdfChange($event)">
+                                @error('official_document')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                         </div>
 
                         {{-- ============================
@@ -1050,6 +1196,7 @@
             speaker2Preview: null,
             mcPreview: null,
             hostPhotoPreview: null,
+            pdfFileName: null,
 
             stepLabels: ['Informasi Dasar', 'Detail Acara', 'Media & Pengaturan', 'Review & Konfirmasi'],
 
@@ -1057,9 +1204,10 @@
                 { value: 'pernikahan',       label: 'Pernikahan',       icon: '💒' },
                 { value: 'buka_puasa',       label: 'Buka Puasa',       icon: '🌙' },
                 { value: 'workshop',         label: 'Workshop',         icon: '🎓' },
-                { value: 'kegiatan_kantor',  label: 'Kegiatan Kantor',  icon: '🏛️' },
-                { value: 'rapat',            label: 'Rapat',            icon: '👔' },
-                { value: 'pelatihan',        label: 'Pelatihan',        icon: '📋' },
+                { value: 'kegiatan_kantor',  label: 'Kegiatan Kantor',       icon: '🏛️' },
+                { value: 'rapat',            label: 'Rapat',                 icon: '👔' },
+                { value: 'pelatihan',        label: 'Pelatihan',             icon: '📋' },
+                { value: 'official_notice',  label: 'Pemberitahuan Kedinasan', icon: '📢' },
             ],
 
 
@@ -1093,6 +1241,14 @@
                     speaker2_role:   '{{ old('event_data.speaker2_role', '') }}',
                     mc_name:         '{{ old('event_data.mc_name', '') }}',
                     mc_title:        '{{ old('event_data.mc_title', '') }}',
+                    // official_notice fields
+                    total_target_asn: '{{ old('total_target_asn', '') }}',
+                    deadline:        '{{ old('event_data.deadline', '') }}',
+                    notice_number:   '{{ old('event_data.notice_number', '') }}',
+                    notice_level:    '{{ old('event_data.notice_level', 'normal') }}',
+                    issuing_unit:    '{{ old('event_data.issuing_unit', '') }}',
+                    zi_commitment:   '{{ old('event_data.zi_commitment', '') }}',
+                    contact_person:  '{{ old('event_data.contact_person', '') }}',
                 },
             },
 
@@ -1188,6 +1344,16 @@
                         descLabel:          'Deskripsi Pelatihan',
                         descPlaceholder:    'Jelaskan materi, tujuan, dan manfaat pelatihan...',
                     },
+                    official_notice: {
+                        subtitle:           'Isi informasi pemberitahuan kedinasan.',
+                        hostLabel:          'Unit / Instansi Penerbit',
+                        hostPlaceholder:    'Biro Umum, Sekretariat Daerah, dsb.',
+                        dateLabel:          'Tanggal Berlaku',
+                        locationLabel:      'Kantor / Instansi',
+                        locationPlaceholder:'Nama kantor atau instansi penerbit',
+                        descLabel:          'Isi Pemberitahuan',
+                        descPlaceholder:    'Jelaskan isi pemberitahuan secara lengkap...',
+                    },
                 };
                 // Default fallback (jika tipe baru belum ada config-nya)
                 return configs[this.form.event_type] ?? {
@@ -1211,6 +1377,7 @@
                     kegiatan_kantor: 'Penyelenggara',
                     rapat:           'Pemimpin Rapat',
                     pelatihan:       'Instruktur',
+                    official_notice: 'Unit Penerbit',
                 };
                 return map[this.form.event_type] ?? 'Nama';
             },
@@ -1334,6 +1501,12 @@
                 const reader = new FileReader();
                 reader.onload = (e) => { this.hostPhotoPreview = e.target.result; };
                 reader.readAsDataURL(file);
+            },
+
+            handlePdfChange(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                this.pdfFileName = file.name;
             },
         };
     }

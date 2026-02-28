@@ -91,6 +91,7 @@ Route::middleware(['auth', 'verified', 'approved', 'role:user'])->prefix('user')
     Route::resource('events', EventController::class);
     Route::put('events/{event}/publish', [EventController::class, 'publish'])->name('events.publish');
     Route::get('events/{event}/export-guests', [EventController::class, 'exportGuests'])->name('events.export-guests');
+    Route::get('events/{event}/export-notices', [EventController::class, 'exportNotices'])->name('events.export-notices');
 });
 
 Route::middleware(['auth', 'approved'])->group(function () {
@@ -104,5 +105,6 @@ Route::get('/invitation/{slug}', [InvitationController::class, 'show'])->name('i
 Route::post('/invitation/{slug}/rsvp', [InvitationController::class, 'rsvp'])->name('invitation.rsvp');
 Route::post('/invitation/{slug}/wish', [InvitationController::class, 'wish'])->name('invitation.wish');
 Route::get('/invitation/{slug}/ics', [InvitationController::class, 'calendar'])->name('invitation.ics');
+Route::post('/invitation/{slug}/report', [InvitationController::class, 'report'])->name('invitation.report');
 
 require __DIR__.'/auth.php';

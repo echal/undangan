@@ -15,6 +15,9 @@ class Event extends Model
         'template_id',
         'theme_id',
         'event_type',
+        'notice_level',
+        'total_target_asn',
+        'official_document',
         'event_data',
         'title',
         'slug',
@@ -77,6 +80,11 @@ class Event extends Model
     public function wishes(): HasMany
     {
         return $this->hasMany(Wish::class);
+    }
+
+    public function noticeReports(): HasMany
+    {
+        return $this->hasMany(NoticeReport::class);
     }
 
     public function isExpired(): bool

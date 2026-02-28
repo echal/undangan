@@ -73,6 +73,13 @@ class ThemeSeeder extends Seeder
                 'preview_image' => null,
                 'is_active'     => true,
             ],
+            [
+                'name'          => 'Official Blue',
+                'slug'          => 'official-blue',
+                'folder'        => 'official_blue',
+                'preview_image' => null,
+                'is_active'     => true,
+            ],
         ];
 
         foreach ($themes as $theme) {

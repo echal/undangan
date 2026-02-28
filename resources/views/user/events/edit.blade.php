@@ -320,6 +320,100 @@
                                         <span class="text-sm text-gray-700 dark:text-gray-300">Tampilkan daftar peserta</span>
                                     </label>
                                 </div>
+
+                            @elseif ($event->event_type === 'official_notice')
+                                {{-- Total Target ASN --}}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Total Target ASN <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="number" name="total_target_asn" min="0"
+                                           value="{{ old('total_target_asn', $event->total_target_asn) }}"
+                                           placeholder="Contoh: 120"
+                                           class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                    <p class="mt-1 text-xs text-gray-400">Jumlah total ASN yang wajib melaporkan.</p>
+                                    @error('total_target_asn')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                                </div>
+
+                                {{-- Nomor Surat --}}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Nomor Surat <span class="text-gray-400 text-xs">(opsional)</span>
+                                    </label>
+                                    <input type="text" name="event_data[notice_number]"
+                                           value="{{ old('event_data.notice_number', $event->event_data['notice_number'] ?? '') }}"
+                                           placeholder="Contoh: 001/UN.1/HM/2026"
+                                           class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm font-mono">
+                                </div>
+
+                                {{-- Tingkat Urgensi --}}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tingkat Urgensi</label>
+                                    <div class="flex flex-wrap gap-3">
+                                        @foreach (['normal' => 'Normal', 'important' => 'Penting', 'urgent' => 'Mendesak'] as $val => $lbl)
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="radio" name="event_data[notice_level]" value="{{ $val }}"
+                                                   {{ old('event_data.notice_level', $event->event_data['notice_level'] ?? 'normal') === $val ? 'checked' : '' }}
+                                                   class="text-indigo-600 focus:ring-indigo-500">
+                                            <span class="text-sm text-gray-700 dark:text-gray-300">{{ $lbl }}</span>
+                                        </label>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                {{-- Batas Waktu --}}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Batas Waktu / Deadline <span class="text-gray-400 text-xs">(opsional)</span>
+                                    </label>
+                                    <input type="text" name="event_data[deadline]"
+                                           value="{{ old('event_data.deadline', $event->event_data['deadline'] ?? '') }}"
+                                           placeholder="Contoh: 31 Maret 2026 pukul 16.00 WIB"
+                                           class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                </div>
+
+                                {{-- Unit Penerbit --}}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Unit / Bagian Penerbit <span class="text-gray-400 text-xs">(opsional)</span>
+                                    </label>
+                                    <input type="text" name="event_data[issuing_unit]"
+                                           value="{{ old('event_data.issuing_unit', $event->event_data['issuing_unit'] ?? '') }}"
+                                           placeholder="Biro Umum, Sekretariat, dsb."
+                                           class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                </div>
+
+                                {{-- Isi Pemberitahuan --}}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Isi Pemberitahuan <span class="text-gray-400 text-xs">(opsional)</span>
+                                    </label>
+                                    <textarea name="event_data[description]" rows="5"
+                                              placeholder="Jelaskan isi pemberitahuan secara lengkap..."
+                                              class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">{{ old('event_data.description', $event->event_data['description'] ?? '') }}</textarea>
+                                </div>
+
+                                {{-- Komitmen ZI/WBK/WBBM --}}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Komitmen ZI / WBK / WBBM <span class="text-gray-400 text-xs">(opsional)</span>
+                                    </label>
+                                    <textarea name="event_data[zi_commitment]" rows="3"
+                                              placeholder="Tuliskan komitmen zona integritas instansi..."
+                                              class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">{{ old('event_data.zi_commitment', $event->event_data['zi_commitment'] ?? '') }}</textarea>
+                                </div>
+
+                                {{-- Narahubung --}}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Narahubung / Kontak <span class="text-gray-400 text-xs">(opsional)</span>
+                                    </label>
+                                    <input type="text" name="event_data[contact_person]"
+                                           value="{{ old('event_data.contact_person', $event->event_data['contact_person'] ?? '') }}"
+                                           placeholder="Nama dan nomor HP narahubung"
+                                           class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                </div>
+
                             @endif
 
                         </div>
@@ -436,6 +530,58 @@
                                 @error('gallery_images') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 @error('gallery_images.*') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                             </div>
+
+                            {{-- Upload Dokumen Resmi PDF — khusus official_notice --}}
+                            @if ($event->event_type === 'official_notice')
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Dokumen Resmi (PDF)
+                                    <span class="text-gray-400 text-xs">(opsional — maks. 3MB)</span>
+                                </label>
+
+                                @if ($event->official_document)
+                                <div class="flex items-center gap-3 p-3 mb-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
+                                    <svg class="w-8 h-8 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5z"/>
+                                    </svg>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-blue-700 dark:text-blue-300 truncate">
+                                            {{ basename($event->official_document) }}
+                                        </p>
+                                        <a href="{{ rtrim(config('app.url'), '/') . '/storage/' . ltrim($event->official_document, '/') }}"
+                                           target="_blank"
+                                           class="text-xs text-blue-500 hover:underline">Lihat dokumen saat ini →</a>
+                                    </div>
+                                </div>
+                                @endif
+
+                                <div class="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-5 text-center cursor-pointer hover:border-indigo-400 transition-colors"
+                                     x-data="{ pdfName: null }"
+                                     @click="$refs.pdfUpload.click()">
+                                    <div x-show="!pdfName">
+                                        <svg class="mx-auto h-10 w-10 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                        </svg>
+                                        <p class="text-sm text-gray-500">
+                                            {{ $event->official_document ? 'Klik untuk ganti dokumen' : 'Klik untuk upload surat / nota dinas / SK' }}
+                                        </p>
+                                        <p class="text-xs text-gray-400 mt-1">PDF saja, maks. 3MB</p>
+                                    </div>
+                                    <div x-show="pdfName" class="flex items-center justify-center gap-2">
+                                        <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5z"/>
+                                        </svg>
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300" x-text="pdfName"></span>
+                                    </div>
+                                    <input type="file" name="official_document" accept="application/pdf"
+                                           x-ref="pdfUpload" class="hidden"
+                                           @change="pdfName = $event.target.files[0]?.name ?? null">
+                                </div>
+                                @error('official_document')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            @endif
 
                         </div>
                     </div>
