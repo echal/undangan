@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{{ $event->title }} — Ramadhan Undigi</title>
   <meta name="description" content="Undangan {{ $event->title }} — {{ $event->event_date->translatedFormat('d F Y') }}. {{ $event->location }}" />
+  @include('partials.og-meta-event')
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <style>

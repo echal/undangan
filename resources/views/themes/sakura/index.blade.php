@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{{ $event->bride_name }} & {{ $event->groom_name }} — Undangan Pernikahan</title>
   <meta name="description" content="Undangan pernikahan {{ $event->bride_name }} & {{ $event->groom_name }}, {{ $event->event_date->translatedFormat('d F Y') }}." />
+  @include('partials.og-meta-event')
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,400;1,600&display=swap" rel="stylesheet" />
   <style>
