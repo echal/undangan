@@ -996,7 +996,15 @@
      Floating button bottom-right
      Alpine.js — fade in/out
 ══════════════════════════════════════ --}}
-@if($event->background_music)
+@php
+    $musicUrl = null;
+    if ($event->music_id && $event->music) {
+        $musicUrl = $event->music->url;
+    } elseif ($event->background_music) {
+        $musicUrl = rtrim(config('app.url'), '/') . '/storage/' . ltrim($event->background_music, '/');
+    }
+@endphp
+@if($musicUrl)
 <style>
   .music-btn {
     position: fixed;
@@ -1041,7 +1049,7 @@
 
 <div x-data="musicPlayer()" x-init="init()">
   <audio x-ref="audio" loop preload="none">
-    <source src="{{ asset('storage/' . $event->background_music) }}" type="audio/mpeg">
+    <source src="{{ $musicUrl }}" type="audio/mpeg">
   </audio>
   <button
     @click="toggle()"
