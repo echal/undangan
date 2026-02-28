@@ -545,7 +545,7 @@
 {{-- ══════════════════════════════════════
      HERO
 ══════════════════════════════════════ --}}
-<section class="hero">
+<section id="hero" class="hero">
   @if ($event->banner_image)
     <div class="hero-bg" style="background-image: url('{{ rtrim(config('app.url'), '/') }}/storage/{{ str_replace('\\', '/', $event->banner_image) }}')"></div>
   @endif
@@ -571,7 +571,7 @@
 {{-- ══════════════════════════════════════
      COUNTDOWN
 ══════════════════════════════════════ --}}
-<section class="countdown-section">
+<section id="detail" class="countdown-section">
   <div class="section-inner">
     <span class="section-label">Save the Date</span>
     <h2 class="section-title">Menghitung Hari</h2>
@@ -611,7 +611,7 @@
 {{-- ══════════════════════════════════════
      AKAD & RESEPSI
 ══════════════════════════════════════ --}}
-<section>
+<section id="location" class="detail-section">
   <div class="section-inner">
     <span class="section-label">Acara</span>
     <h2 class="section-title">Akad & Resepsi</h2>
@@ -688,7 +688,7 @@
 ══════════════════════════════════════ --}}
 @if (! empty($event->gallery_images))
 @php $galleryUrls = array_map(fn($img) => rtrim(config('app.url'), '/') . '/storage/' . str_replace('\\', '/', $img), $event->gallery_images); @endphp
-<section class="gallery-section"
+<section id="gallery" class="gallery-section"
   x-data="{
     open: false,
     current: 0,
@@ -750,7 +750,7 @@
      RSVP (conditional)
 ══════════════════════════════════════ --}}
 @if ($event->rsvp_enabled)
-<section class="rsvp-section">
+<section id="rsvp" class="rsvp-section">
   <div class="section-inner">
     <span class="section-label">Konfirmasi</span>
     <h2 class="section-title">RSVP Kehadiran</h2>
@@ -834,151 +834,10 @@
 </footer>
 
 {{-- ══════════════════════════════════════
-     BACKGROUND MUSIC PLAYER
-     Floating button bottom-right
-     Alpine.js component — fade in/out
-     Only rendered when background_music exists
+     BOTTOM NAVIGATION + MUSIC
+     Home | Detail | Galeri | Lokasi | Musik
 ══════════════════════════════════════ --}}
-@php
-    $musicUrl = null;
-    if ($event->music_id && $event->music) {
-        $musicUrl = $event->music->url;
-    } elseif ($event->background_music) {
-        $musicUrl = rtrim(config('app.url'), '/') . '/storage/' . ltrim($event->background_music, '/');
-    }
-@endphp
-@if($musicUrl)
-<style>
-  /* ── Music player floating button ── */
-  .music-btn {
-    position: fixed;
-    bottom: 28px;
-    right: 24px;
-    z-index: 9999;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--rose, #c9748f), var(--gold, #b8935a));
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.22), 0 0 0 4px rgba(201,116,143,0.18);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    -webkit-tap-highlight-color: transparent;
-    outline: none;
-  }
-  .music-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 24px rgba(0,0,0,0.28), 0 0 0 6px rgba(201,116,143,0.22);
-  }
-  /* Pulse ring when playing */
-  @keyframes musicPulse {
-    0%   { box-shadow: 0 4px 18px rgba(0,0,0,0.22), 0 0 0 4px rgba(201,116,143,0.30); }
-    50%  { box-shadow: 0 4px 18px rgba(0,0,0,0.22), 0 0 0 10px rgba(201,116,143,0.06); }
-    100% { box-shadow: 0 4px 18px rgba(0,0,0,0.22), 0 0 0 4px rgba(201,116,143,0.30); }
-  }
-  .music-btn.playing {
-    animation: musicPulse 2s ease-in-out infinite;
-  }
-  /* Icon spin when playing */
-  @keyframes musicSpin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
-  .music-icon.playing {
-    display: inline-block;
-    animation: musicSpin 4s linear infinite;
-  }
-  /* Safe spacing so button doesn't overlap RSVP form on mobile */
-  @media (max-width: 480px) {
-    .music-btn { bottom: 20px; right: 16px; width: 46px; height: 46px; font-size: 1.2rem; }
-  }
-</style>
-
-<div x-data="musicPlayer()" x-init="init()">
-  {{-- Hidden audio element — loop enabled --}}
-  <audio x-ref="audio" loop preload="none">
-    <source src="{{ $musicUrl }}" type="audio/mpeg">
-  </audio>
-
-  {{-- Floating toggle button --}}
-  <button
-    @click="toggle()"
-    class="music-btn"
-    :class="{ 'playing': isPlaying }"
-    :title="isPlaying ? 'Pause Musik' : 'Putar Musik'"
-    aria-label="Toggle background music"
-  >
-    <span class="music-icon" :class="{ 'playing': isPlaying }">🎵</span>
-  </button>
-</div>
-
-<script>
-  function musicPlayer() {
-    return {
-      isPlaying: false,
-      fadeDuration: 800,   // ms for fade in/out
-      fadeSteps: 20,
-      _fadeTimer: null,
-
-      init() {
-        // Pre-set volume to 0 so first play fades in smoothly
-        this.$refs.audio.volume = 0;
-      },
-
-      toggle() {
-        this.isPlaying ? this.pause() : this.play();
-      },
-
-      play() {
-        const audio = this.$refs.audio;
-        // Clear any existing fade
-        clearInterval(this._fadeTimer);
-        audio.volume = 0;
-        audio.play().then(() => {
-          this.isPlaying = true;
-          // Fade in: step volume from 0 → 1
-          let step = 0;
-          const stepSize = 1 / this.fadeSteps;
-          const stepInterval = this.fadeDuration / this.fadeSteps;
-          this._fadeTimer = setInterval(() => {
-            step++;
-            audio.volume = Math.min(1, parseFloat((step * stepSize).toFixed(2)));
-            if (step >= this.fadeSteps) clearInterval(this._fadeTimer);
-          }, stepInterval);
-        }).catch(() => {
-          // Browser blocked autoplay — button stays paused state, user must try again
-          this.isPlaying = false;
-        });
-      },
-
-      pause() {
-        const audio = this.$refs.audio;
-        clearInterval(this._fadeTimer);
-        // Fade out: step volume from current → 0, then pause
-        let currentVol = audio.volume;
-        const steps = this.fadeSteps;
-        const stepSize = currentVol / steps;
-        const stepInterval = this.fadeDuration / steps;
-        let step = 0;
-        this._fadeTimer = setInterval(() => {
-          step++;
-          audio.volume = Math.max(0, parseFloat((currentVol - step * stepSize).toFixed(2)));
-          if (step >= steps) {
-            clearInterval(this._fadeTimer);
-            audio.pause();
-            this.isPlaying = false;
-          }
-        }, stepInterval);
-      },
-    };
-  }
-</script>
-@endif
+<x-bottom-nav :event="$event" theme="wedding" />
 
 </body>
 </html>

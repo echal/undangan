@@ -16,7 +16,14 @@
   }
 
   $isExec     = $theme === 'executive';
-  $themeSlug  = $theme === 'corporate' ? 'corp' : ($theme === 'executive' ? 'exec' : 'govt');
+  $isDark     = in_array($theme, ['executive', 'ramadan']);
+  $themeSlug  = match($theme) {
+      'corporate' => 'corp',
+      'executive' => 'exec',
+      'wedding'   => 'wedding',
+      'ramadan'   => 'ramadan',
+      default     => 'govt',
+  };
 @endphp
 
 <style>
@@ -29,13 +36,13 @@
     display: flex;
     align-items: center;
     gap: 2px;
-    background: {{ $isExec ? 'rgba(31,41,55,0.96)' : 'rgba(255,255,255,0.93)' }};
+    background: {{ $isDark ? 'rgba(31,41,55,0.96)' : 'rgba(255,255,255,0.93)' }};
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-radius: 999px;
     padding: 8px 10px;
-    box-shadow: 0 8px 32px rgba(0,0,0,{{ $isExec ? '0.55' : '0.13' }}), 0 2px 8px rgba(0,0,0,0.07){{ $isExec ? '' : ', inset 0 1px 0 rgba(255,255,255,0.9)' }};
-    border: 1px solid {{ $isExec ? 'rgba(212,175,55,0.25)' : 'rgba(255,255,255,0.7)' }};
+    box-shadow: 0 8px 32px rgba(0,0,0,{{ $isDark ? '0.55' : '0.13' }}), 0 2px 8px rgba(0,0,0,0.07){{ $isDark ? '' : ', inset 0 1px 0 rgba(255,255,255,0.9)' }};
+    border: 1px solid {{ $isDark ? 'rgba(212,175,55,0.25)' : 'rgba(255,255,255,0.7)' }};
   }
   @media (min-width: 768px) {
     #bottom-nav { display: none !important; }
@@ -73,11 +80,13 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
   }
   .bn-inactive {
-    color: {{ $isExec ? '#6b7280' : '#9ca3af' }};
+    color: {{ $isDark ? '#6b7280' : '#9ca3af' }};
   }
-  .bn-active-govt { color: #0f766e; transform: scale(1.12); }
-  .bn-active-corp { color: #d97706; transform: scale(1.12); }
-  .bn-active-exec { color: #d4af37; transform: scale(1.12); }
+  .bn-active-govt    { color: #0f766e; transform: scale(1.12); }
+  .bn-active-corp    { color: #d97706; transform: scale(1.12); }
+  .bn-active-exec    { color: #d4af37; transform: scale(1.12); }
+  .bn-active-wedding { color: #c9748f; transform: scale(1.12); }
+  .bn-active-ramadan { color: #c8960c; transform: scale(1.12); }
 
   /* Music pulse animation */
   @keyframes bn-pulse {
@@ -90,7 +99,7 @@
   .bn-divider {
     width: 1px;
     height: 28px;
-    background: {{ $isExec ? 'rgba(212,175,55,0.18)' : 'rgba(0,0,0,0.08)' }};
+    background: {{ $isDark ? 'rgba(212,175,55,0.18)' : 'rgba(0,0,0,0.08)' }};
     margin: 0 2px;
     flex-shrink: 0;
   }
