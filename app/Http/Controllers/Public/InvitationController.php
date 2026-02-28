@@ -17,7 +17,7 @@ class InvitationController extends Controller
 {
     public function show(string $slug): View
     {
-        $event = Event::with(['wishes' => fn ($q) => $q->latest(), 'guests', 'theme', 'noticeReports' => fn ($q) => $q->latest()])
+        $event = Event::with(['wishes' => fn ($q) => $q->latest(), 'guests', 'theme', 'music', 'noticeReports' => fn ($q) => $q->latest()])
             ->where('slug', $slug)
             ->where('is_published', true)
             ->where(fn ($q) => $q->whereNull('expired_at')->orWhere('expired_at', '>', now()))
