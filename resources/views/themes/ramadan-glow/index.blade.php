@@ -493,12 +493,12 @@
           <p class="host-label">Mengundang Anda</p>
           <p class="host-name">{{ $hostName }}</p>
         @endif
+        <p class="host-bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</p>
         @if ($description)
           <p class="host-desc">{{ $description }}</p>
         @else
           <p class="host-desc">Dengan penuh kebahagiaan, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan berbagi berkah bersama kami.</p>
         @endif
-        <p class="host-bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</p>
       </div>
 
     </div>
