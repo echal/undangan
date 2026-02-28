@@ -596,7 +596,7 @@
 {{-- ══════════════════════════════════════
      HERO
 ══════════════════════════════════════ --}}
-<div class="hero">
+<div id="hero" class="hero">
   @if ($event->banner_image)
     <div class="hero-banner-bg" style="background-image: url('{{ rtrim(config('app.url'), '/') }}/storage/{{ str_replace('\\', '/', $event->banner_image) }}')"></div>
   @endif
@@ -662,7 +662,7 @@
      SPEAKERS (conditional)
 ══════════════════════════════════════ --}}
 @if ($hasSpeakers)
-<section class="speakers-section">
+<section id="detail" class="speakers-section">
   <div class="section-inner">
     <div class="section-header">
       <span class="section-label">Narasumber</span>
@@ -740,7 +740,7 @@
 {{-- ══════════════════════════════════════
      INFO CARDS
 ══════════════════════════════════════ --}}
-<section class="info-section">
+<section id="location" class="info-section">
   <div class="section-inner">
     <div class="section-header">
       <span class="section-label">Informasi</span>
@@ -810,7 +810,7 @@
 ══════════════════════════════════════ --}}
 @if (! empty($event->gallery_images))
 @php $galleryUrls = array_map(fn($img) => rtrim(config('app.url'), '/') . '/storage/' . str_replace('\\', '/', $img), $event->gallery_images); @endphp
-<section class="gallery-section"
+<section id="gallery" class="gallery-section"
   x-data="{
     open: false,
     current: 0,
@@ -867,7 +867,7 @@
      RSVP (conditional)
 ══════════════════════════════════════ --}}
 @if ($event->rsvp_enabled)
-<section class="rsvp-section">
+<section id="rsvp" class="rsvp-section">
   <div class="section-inner">
     <div class="section-header">
       <span class="section-label">Pendaftaran</span>
@@ -992,123 +992,10 @@
 </footer>
 
 {{-- ══════════════════════════════════════
-     BACKGROUND MUSIC PLAYER
-     Floating button bottom-right
-     Alpine.js — fade in/out
+     BOTTOM NAVIGATION + MUSIC
+     Home | Detail | Galeri | Lokasi | Musik
 ══════════════════════════════════════ --}}
-@php
-    $musicUrl = null;
-    if ($event->music_id && $event->music) {
-        $musicUrl = $event->music->url;
-    } elseif ($event->background_music) {
-        $musicUrl = rtrim(config('app.url'), '/') . '/storage/' . ltrim($event->background_music, '/');
-    }
-@endphp
-@if($musicUrl)
-<style>
-  .music-btn {
-    position: fixed;
-    bottom: 28px;
-    right: 24px;
-    z-index: 9999;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-    box-shadow: 0 4px 18px rgba(37,99,235,0.35), 0 0 0 4px rgba(37,99,235,0.15);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    -webkit-tap-highlight-color: transparent;
-    outline: none;
-  }
-  .music-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 24px rgba(37,99,235,0.45), 0 0 0 6px rgba(37,99,235,0.20);
-  }
-  @keyframes musicPulse {
-    0%   { box-shadow: 0 4px 18px rgba(37,99,235,0.35), 0 0 0 4px rgba(37,99,235,0.25); }
-    50%  { box-shadow: 0 4px 18px rgba(37,99,235,0.35), 0 0 0 12px rgba(37,99,235,0.05); }
-    100% { box-shadow: 0 4px 18px rgba(37,99,235,0.35), 0 0 0 4px rgba(37,99,235,0.25); }
-  }
-  .music-btn.playing { animation: musicPulse 2s ease-in-out infinite; }
-  @keyframes musicSpin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
-  .music-icon.playing { display: inline-block; animation: musicSpin 4s linear infinite; }
-  @media (max-width: 480px) {
-    .music-btn { bottom: 20px; right: 16px; width: 46px; height: 46px; font-size: 1.2rem; }
-  }
-</style>
-
-<div x-data="musicPlayer()" x-init="init()">
-  <audio x-ref="audio" loop preload="none">
-    <source src="{{ $musicUrl }}" type="audio/mpeg">
-  </audio>
-  <button
-    @click="toggle()"
-    class="music-btn"
-    :class="{ 'playing': isPlaying }"
-    :title="isPlaying ? 'Pause Musik' : 'Putar Musik'"
-    aria-label="Toggle background music"
-  >
-    <span class="music-icon" :class="{ 'playing': isPlaying }">🎵</span>
-  </button>
-</div>
-
-<script>
-  function musicPlayer() {
-    return {
-      isPlaying: false,
-      fadeDuration: 800,
-      fadeSteps: 20,
-      _fadeTimer: null,
-      init() { this.$refs.audio.volume = 0; },
-      toggle() { this.isPlaying ? this.pause() : this.play(); },
-      play() {
-        const audio = this.$refs.audio;
-        clearInterval(this._fadeTimer);
-        audio.volume = 0;
-        audio.play().then(() => {
-          this.isPlaying = true;
-          let step = 0;
-          const stepSize = 1 / this.fadeSteps;
-          const stepInterval = this.fadeDuration / this.fadeSteps;
-          this._fadeTimer = setInterval(() => {
-            step++;
-            audio.volume = Math.min(1, parseFloat((step * stepSize).toFixed(2)));
-            if (step >= this.fadeSteps) clearInterval(this._fadeTimer);
-          }, stepInterval);
-        }).catch(() => { this.isPlaying = false; });
-      },
-      pause() {
-        const audio = this.$refs.audio;
-        clearInterval(this._fadeTimer);
-        let currentVol = audio.volume;
-        const steps = this.fadeSteps;
-        const stepSize = currentVol / steps;
-        const stepInterval = this.fadeDuration / steps;
-        let step = 0;
-        this._fadeTimer = setInterval(() => {
-          step++;
-          audio.volume = Math.max(0, parseFloat((currentVol - step * stepSize).toFixed(2)));
-          if (step >= steps) {
-            clearInterval(this._fadeTimer);
-            audio.pause();
-            this.isPlaying = false;
-          }
-        }, stepInterval);
-      },
-    };
-  }
-</script>
-@endif
+<x-bottom-nav :event="$event" theme="workshop" />
 
 </body>
 </html>

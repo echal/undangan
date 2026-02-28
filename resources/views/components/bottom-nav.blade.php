@@ -6,9 +6,10 @@
   // Musik: prioritaskan relasi music_id (library terpusat), fallback ke background_music lama
   $hasMusic  = false;
   $musicUrl  = null;
-  if ($event->music_id && $event->music) {
+  $music     = $event->relationLoaded('music') ? $event->music : $event->music()->first();
+  if ($event->music_id && $music) {
       $hasMusic = true;
-      $musicUrl = $event->music->url;
+      $musicUrl = $music->url;
   } elseif ($event->background_music) {
       // Backward compat: undangan lama yang masih pakai path langsung
       $hasMusic = true;
@@ -22,6 +23,7 @@
       'executive' => 'exec',
       'wedding'   => 'wedding',
       'ramadan'   => 'ramadan',
+      'workshop'  => 'workshop',
       default     => 'govt',
   };
 @endphp
@@ -85,8 +87,9 @@
   .bn-active-govt    { color: #0f766e; transform: scale(1.12); }
   .bn-active-corp    { color: #d97706; transform: scale(1.12); }
   .bn-active-exec    { color: #d4af37; transform: scale(1.12); }
-  .bn-active-wedding { color: #c9748f; transform: scale(1.12); }
-  .bn-active-ramadan { color: #c8960c; transform: scale(1.12); }
+  .bn-active-wedding  { color: #c9748f; transform: scale(1.12); }
+  .bn-active-ramadan  { color: #c8960c; transform: scale(1.12); }
+  .bn-active-workshop { color: #2563eb; transform: scale(1.12); }
 
   /* Music pulse animation */
   @keyframes bn-pulse {
