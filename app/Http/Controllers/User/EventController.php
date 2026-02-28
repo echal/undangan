@@ -145,7 +145,7 @@ class EventController extends Controller
         }
 
         $validated['user_id']      = auth()->id();
-        $validated['slug']         = Str::slug($validated['title']) . '-' . uniqid();
+        $validated['slug']         = Str::slug($validated['title']) . '-' . substr(uniqid(), -6);
         $validated['rsvp_enabled'] = $request->input('rsvp_enabled') === '1';
         $validated['groom_name']   = $validated['groom_name'] ?? null;
 
