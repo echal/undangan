@@ -67,7 +67,7 @@ class Event extends Model
         return $this->belongsTo(Theme::class);
     }
 
-    public function music(): BelongsTo
+    public function musicTrack(): BelongsTo
     {
         return $this->belongsTo(MusicLibrary::class, 'music_id');
     }

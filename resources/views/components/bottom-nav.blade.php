@@ -6,7 +6,7 @@
   // Musik: prioritaskan relasi music_id (library terpusat), fallback ke background_music lama
   $hasMusic  = false;
   $musicUrl  = null;
-  $music     = $event->relationLoaded('music') ? $event->music : $event->music()->first();
+  $music     = $event->relationLoaded('musicTrack') ? $event->musicTrack : $event->musicTrack()->first();
   if ($event->music_id && $music) {
       $hasMusic = true;
       $musicUrl = $music->url;
