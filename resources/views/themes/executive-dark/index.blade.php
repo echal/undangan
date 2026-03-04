@@ -282,6 +282,10 @@
 </div>
 @endif
 
+{{-- Countdown + Calendar: tampil setelah hero, sebelum konten utama --}}
+@include('partials.event-tools', ['event' => $event, 'theme' => 'executive'])
+@section('event_tools_placed', '1')
+
 @if ($hasSpeakers)
 <section class="speakers-section">
   <div class="section-inner">

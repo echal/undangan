@@ -21,8 +21,13 @@
 {{-- ── KONTEN TEMA ── --}}
 @yield('content')
 
-{{-- ── EVENT TOOLS: Countdown + Save to Calendar (global) ── --}}
-@include('partials.event-tools', ['event' => $event, 'theme' => $__env->yieldContent('theme', 'government')])
+{{-- ── EVENT TOOLS: Countdown + Save to Calendar ── --}}
+{{-- Tema bisa @push('event-tools') untuk posisi custom di dalam @yield('content') --}}
+{{-- Jika tidak ada yang push, render di sini sebagai fallback --}}
+@stack('event-tools')
+@unless($__env->yieldContent('event_tools_placed') === '1')
+  @include('partials.event-tools', ['event' => $event, 'theme' => $__env->yieldContent('theme', 'government')])
+@endunless
 
 {{-- ── FOOTER TEMA (opsional, per tema) ── --}}
 @yield('footer')
