@@ -160,10 +160,9 @@ class EventController extends Controller
                 ->store('events/documents', 'public');
         }
 
-        // Handle banner image upload
+        // Handle banner image upload — auto-crop to 1200×630 for OG image
         if ($request->hasFile('banner_image')) {
-            $validated['banner_image'] = $request->file('banner_image')
-                ->store('events/banners', 'public');
+            $validated['banner_image'] = $this->cropBanner($request->file('banner_image'));
         }
 
         // Handle gallery images upload
@@ -300,13 +299,12 @@ class EventController extends Controller
             'official_document.max'          => 'Ukuran dokumen resmi maksimal 3MB.',
         ]);
 
-        // ── BANNER: replace old file if new one uploaded ──────────────────
+        // ── BANNER: replace old file if new one uploaded — auto-crop 1200×630 ──
         if ($request->hasFile('banner_image')) {
             if ($event->banner_image) {
                 Storage::disk('public')->delete($event->banner_image);
             }
-            $validated['banner_image'] = $request->file('banner_image')
-                ->store('events/banners', 'public');
+            $validated['banner_image'] = $this->cropBanner($request->file('banner_image'));
         } else {
             unset($validated['banner_image']);
         }
@@ -435,5 +433,72 @@ class EventController extends Controller
         if ((int) $event->user_id !== (int) auth()->id()) {
             abort(403, 'Anda tidak memiliki akses ke undangan ini.');
         }
+    }
+
+    /**
+     * Crop & resize uploaded banner to 1200×630 (OG image standard).
+     * Uses center-crop so the subject stays in frame.
+     * Returns the relative storage path (events/banners/xxx.jpg).
+     */
+    private function cropBanner(\Illuminate\Http\UploadedFile $file): string
+    {
+        $mime = $file->getMimeType();
+
+        // Load source image via GD
+        $src = match (true) {
+            str_contains($mime, 'png')  => imagecreatefrompng($file->getRealPath()),
+            str_contains($mime, 'webp') => imagecreatefromwebp($file->getRealPath()),
+            default                     => imagecreatefromjpeg($file->getRealPath()),
+        };
+
+        $srcW = imagesx($src);
+        $srcH = imagesy($src);
+
+        $targetW = 1200;
+        $targetH = 630;
+
+        // Calculate center-crop box preserving aspect ratio
+        $srcRatio    = $srcW / $srcH;
+        $targetRatio = $targetW / $targetH;
+
+        if ($srcRatio > $targetRatio) {
+            // Source is wider → crop sides
+            $cropH = $srcH;
+            $cropW = (int) round($srcH * $targetRatio);
+        } else {
+            // Source is taller → crop top/bottom
+            $cropW = $srcW;
+            $cropH = (int) round($srcW / $targetRatio);
+        }
+
+        $cropX = (int) round(($srcW - $cropW) / 2);
+        $cropY = (int) round(($srcH - $cropH) / 2);
+
+        // Create destination canvas
+        $dst = imagecreatetruecolor($targetW, $targetH);
+
+        // Preserve transparency for PNG/WEBP
+        if (str_contains($mime, 'png') || str_contains($mime, 'webp')) {
+            imagealphablending($dst, false);
+            imagesavealpha($dst, true);
+        }
+
+        imagecopyresampled($dst, $src, 0, 0, $cropX, $cropY, $targetW, $targetH, $cropW, $cropH);
+        imagedestroy($src);
+
+        // Save to temp file then move to storage
+        $filename  = 'banner_' . uniqid() . '.jpg';
+        $storagePath = 'events/banners/' . $filename;
+        $diskPath    = Storage::disk('public')->path($storagePath);
+
+        // Ensure directory exists
+        if (! is_dir(dirname($diskPath))) {
+            mkdir(dirname($diskPath), 0755, true);
+        }
+
+        imagejpeg($dst, $diskPath, 90);
+        imagedestroy($dst);
+
+        return $storagePath;
     }
 }
