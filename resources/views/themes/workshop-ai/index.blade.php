@@ -554,10 +554,8 @@
 
 @php
   $data = $event->event_data ?? [];
-  // Helper: convert storage path to accessible URL (works on XAMPP subdirectory installs)
-  function speakerUrl(string $path): string {
-      return rtrim(config('app.url'), '/') . '/storage/' . ltrim($path, '/');
-  }
+  $speakerUrl = fn(string $path): string =>
+      rtrim(config('app.url'), '/') . '/storage/' . ltrim(str_replace('\\', '/', $path), '/');
 @endphp
 
 {{-- ── HERO ─────────────────────────────────────────────── --}}
@@ -711,7 +709,7 @@
           @if ($hasSpeaker1)
             <div class="speaker-card">
               @if (!empty($data['speaker1_photo']))
-                <img src="{{ speakerUrl($data['speaker1_photo']) }}"
+                <img src="{{ $speakerUrl($data['speaker1_photo']) }}"
                      alt="{{ $data['speaker1_name'] ?? 'Pemateri' }}"
                      class="speaker-card-photo" loading="lazy" />
               @else
@@ -733,7 +731,7 @@
           @if ($hasSpeaker2)
             <div class="speaker-card">
               @if (!empty($data['speaker2_photo']))
-                <img src="{{ speakerUrl($data['speaker2_photo']) }}"
+                <img src="{{ $speakerUrl($data['speaker2_photo']) }}"
                      alt="{{ $data['speaker2_name'] ?? 'Pemateri 2' }}"
                      class="speaker-card-photo" loading="lazy" />
               @else
@@ -755,7 +753,7 @@
           @if ($hasMc)
             <div class="speaker-card">
               @if (!empty($data['mc_photo']))
-                <img src="{{ speakerUrl($data['mc_photo']) }}"
+                <img src="{{ $speakerUrl($data['mc_photo']) }}"
                      alt="{{ $data['mc_name'] ?? 'MC' }}"
                      class="speaker-card-photo" loading="lazy" />
               @else
@@ -786,7 +784,7 @@
         <h2 class="section-title">Foto Kegiatan</h2>
         <div class="gallery-grid">
           @foreach ($event->gallery_images as $img)
-            <img src="{{ speakerUrl($img) }}" alt="Galeri {{ $event->title }}" loading="lazy" />
+            <img src="{{ $speakerUrl($img) }}" alt="Galeri {{ $event->title }}" loading="lazy" />
           @endforeach
         </div>
       </div>

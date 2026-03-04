@@ -581,9 +581,8 @@
   $hasMc       = (bool) $mcName;
   $hasSpeakers = $hasSpeaker1 || $hasSpeaker2 || $hasMc;
 
-  function speakerUrlModern(string $path): string {
-      return rtrim(config('app.url'), '/') . '/storage/' . ltrim(str_replace('\\', '/', $path), '/');
-  }
+  $speakerUrl = fn(string $path): string =>
+      rtrim(config('app.url'), '/') . '/storage/' . ltrim(str_replace('\\', '/', $path), '/');
 @endphp
 
 {{-- ══════════════════════════════════════
@@ -678,7 +677,7 @@
         <div class="speaker-card">
           <div class="speaker-photo-wrap">
             @if ($sp1Photo)
-              <img src="{{ speakerUrlModern($sp1Photo) }}" alt="{{ $sp1Name }}" loading="lazy">
+              <img src="{{ $speakerUrl($sp1Photo) }}" alt="{{ $sp1Name }}" loading="lazy">
             @else
               <div class="speaker-photo-placeholder">👤</div>
             @endif
@@ -698,7 +697,7 @@
         <div class="speaker-card">
           <div class="speaker-photo-wrap">
             @if ($sp2Photo)
-              <img src="{{ speakerUrlModern($sp2Photo) }}" alt="{{ $sp2Name }}" loading="lazy">
+              <img src="{{ $speakerUrl($sp2Photo) }}" alt="{{ $sp2Name }}" loading="lazy">
             @else
               <div class="speaker-photo-placeholder">👤</div>
             @endif
@@ -718,7 +717,7 @@
         <div class="speaker-card">
           <div class="speaker-photo-wrap">
             @if ($mcPhoto)
-              <img src="{{ speakerUrlModern($mcPhoto) }}" alt="{{ $mcName }}" loading="lazy">
+              <img src="{{ $speakerUrl($mcPhoto) }}" alt="{{ $mcName }}" loading="lazy">
             @else
               <div class="speaker-photo-placeholder">🎙️</div>
             @endif
