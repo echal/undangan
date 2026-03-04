@@ -321,6 +321,179 @@
                                     </label>
                                 </div>
 
+                                {{-- Tim Pemateri & MC --}}
+                                <div class="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+                                    <div class="bg-indigo-50 dark:bg-indigo-900/20 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                                        <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">🎤 Tim Pemateri & MC</p>
+                                        <p class="text-xs text-gray-400 mt-0.5">Update foto dan info pemateri</p>
+                                    </div>
+                                    <div class="p-4 space-y-5">
+
+                                        {{-- Pemateri 1 --}}
+                                        <div>
+                                            <p class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-3">Pemateri Utama</p>
+                                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
+                                                <div>
+                                                    <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Foto <span class="font-normal">(opsional)</span></label>
+                                                    <div class="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl overflow-hidden cursor-pointer hover:border-indigo-400 transition-colors bg-gray-50 dark:bg-gray-700/30"
+                                                         style="aspect-ratio:3/4;"
+                                                         @click="$refs.speaker1Photo.click()">
+                                                        <div x-show="!speaker1Preview">
+                                                            @if (!empty($event->event_data['speaker1_photo']))
+                                                                <img src="{{ rtrim(config('app.url'), '/') }}/storage/{{ $event->event_data['speaker1_photo'] }}"
+                                                                     class="w-full h-full object-cover" alt="Foto pemateri 1">
+                                                            @else
+                                                                <div class="absolute inset-0 flex flex-col items-center justify-center gap-1">
+                                                                    <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                                    </svg>
+                                                                    <span class="text-xs text-gray-400">Upload foto</span>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                        <img x-show="speaker1Preview" :src="speaker1Preview"
+                                                             class="w-full h-full object-cover" alt="">
+                                                    </div>
+                                                    <input type="file" name="speaker1_photo" accept="image/*"
+                                                           x-ref="speaker1Photo" class="hidden"
+                                                           @change="handleSpeakerPhoto($event, 1)">
+                                                </div>
+                                                <div class="sm:col-span-2 space-y-2">
+                                                    <div>
+                                                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Nama Lengkap + Gelar</label>
+                                                        <input type="text" name="event_data[speaker1_name]"
+                                                               placeholder="Dr. Budi Santoso, M.Si."
+                                                               value="{{ old('event_data.speaker1_name', $event->event_data['speaker1_name'] ?? '') }}"
+                                                               class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Jabatan / Keahlian</label>
+                                                        <input type="text" name="event_data[speaker1_title]"
+                                                               placeholder="CEO, Dosen, Digital Marketer, dsb."
+                                                               value="{{ old('event_data.speaker1_title', $event->event_data['speaker1_title'] ?? '') }}"
+                                                               class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Peran di Acara</label>
+                                                        <input type="text" name="event_data[speaker1_role]"
+                                                               placeholder="Pakar / Narasumber / Trainer"
+                                                               value="{{ old('event_data.speaker1_role', $event->event_data['speaker1_role'] ?? '') }}"
+                                                               class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <hr class="border-gray-200 dark:border-gray-700">
+
+                                        {{-- Pemateri 2 --}}
+                                        <div>
+                                            <p class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-3">Pemateri 2 <span class="text-gray-400 font-normal normal-case">(opsional)</span></p>
+                                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
+                                                <div>
+                                                    <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Foto</label>
+                                                    <div class="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl overflow-hidden cursor-pointer hover:border-indigo-400 transition-colors bg-gray-50 dark:bg-gray-700/30"
+                                                         style="aspect-ratio:3/4;"
+                                                         @click="$refs.speaker2Photo.click()">
+                                                        <div x-show="!speaker2Preview">
+                                                            @if (!empty($event->event_data['speaker2_photo']))
+                                                                <img src="{{ rtrim(config('app.url'), '/') }}/storage/{{ $event->event_data['speaker2_photo'] }}"
+                                                                     class="w-full h-full object-cover" alt="Foto pemateri 2">
+                                                            @else
+                                                                <div class="absolute inset-0 flex flex-col items-center justify-center gap-1">
+                                                                    <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                                    </svg>
+                                                                    <span class="text-xs text-gray-400">Upload foto</span>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                        <img x-show="speaker2Preview" :src="speaker2Preview"
+                                                             class="w-full h-full object-cover" alt="">
+                                                    </div>
+                                                    <input type="file" name="speaker2_photo" accept="image/*"
+                                                           x-ref="speaker2Photo" class="hidden"
+                                                           @change="handleSpeakerPhoto($event, 2)">
+                                                </div>
+                                                <div class="sm:col-span-2 space-y-2">
+                                                    <div>
+                                                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Nama Lengkap + Gelar</label>
+                                                        <input type="text" name="event_data[speaker2_name]"
+                                                               placeholder="Nama pemateri kedua"
+                                                               value="{{ old('event_data.speaker2_name', $event->event_data['speaker2_name'] ?? '') }}"
+                                                               class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Jabatan / Keahlian</label>
+                                                        <input type="text" name="event_data[speaker2_title]"
+                                                               placeholder="Jabatan atau keahlian"
+                                                               value="{{ old('event_data.speaker2_title', $event->event_data['speaker2_title'] ?? '') }}"
+                                                               class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Peran di Acara</label>
+                                                        <input type="text" name="event_data[speaker2_role]"
+                                                               placeholder="Pemateri / Co-Trainer"
+                                                               value="{{ old('event_data.speaker2_role', $event->event_data['speaker2_role'] ?? '') }}"
+                                                               class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <hr class="border-gray-200 dark:border-gray-700">
+
+                                        {{-- MC / Pembawa Acara --}}
+                                        <div>
+                                            <p class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-3">MC / Pembawa Acara <span class="text-gray-400 font-normal normal-case">(opsional)</span></p>
+                                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
+                                                <div>
+                                                    <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Foto</label>
+                                                    <div class="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl overflow-hidden cursor-pointer hover:border-indigo-400 transition-colors bg-gray-50 dark:bg-gray-700/30"
+                                                         style="aspect-ratio:3/4;"
+                                                         @click="$refs.mcPhoto.click()">
+                                                        <div x-show="!mcPreview">
+                                                            @if (!empty($event->event_data['mc_photo']))
+                                                                <img src="{{ rtrim(config('app.url'), '/') }}/storage/{{ $event->event_data['mc_photo'] }}"
+                                                                     class="w-full h-full object-cover" alt="Foto MC">
+                                                            @else
+                                                                <div class="absolute inset-0 flex flex-col items-center justify-center gap-1">
+                                                                    <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                                    </svg>
+                                                                    <span class="text-xs text-gray-400">Upload foto</span>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                        <img x-show="mcPreview" :src="mcPreview"
+                                                             class="w-full h-full object-cover" alt="">
+                                                    </div>
+                                                    <input type="file" name="mc_photo" accept="image/*"
+                                                           x-ref="mcPhoto" class="hidden"
+                                                           @change="handleSpeakerPhoto($event, 'mc')">
+                                                </div>
+                                                <div class="sm:col-span-2 space-y-2">
+                                                    <div>
+                                                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Nama Lengkap + Gelar</label>
+                                                        <input type="text" name="event_data[mc_name]"
+                                                               placeholder="Nama pembawa acara"
+                                                               value="{{ old('event_data.mc_name', $event->event_data['mc_name'] ?? '') }}"
+                                                               class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Jabatan / Instansi</label>
+                                                        <input type="text" name="event_data[mc_title]"
+                                                               placeholder="Jabatan atau instansi"
+                                                               value="{{ old('event_data.mc_title', $event->event_data['mc_title'] ?? '') }}"
+                                                               class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
                             @elseif ($event->event_type === 'official_notice')
                                 {{-- Total Target ASN --}}
                                 <div>
@@ -693,6 +866,9 @@
             galleryPreviews: [],
             galleryFiles: [],
             hostPhotoPreview: null,
+            speaker1Preview: null,
+            speaker2Preview: null,
+            mcPreview: null,
             rsvpEnabled: {{ $event->rsvp_enabled ? 'true' : 'false' }},
 
             init() {
@@ -758,6 +934,18 @@
                 if (!file) return;
                 const reader = new FileReader();
                 reader.onload = (e) => { this.hostPhotoPreview = e.target.result; };
+                reader.readAsDataURL(file);
+            },
+
+            handleSpeakerPhoto(event, index) {
+                const file = event.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    if (index === 1) this.speaker1Preview = e.target.result;
+                    else if (index === 2) this.speaker2Preview = e.target.result;
+                    else if (index === 'mc') this.mcPreview = e.target.result;
+                };
                 reader.readAsDataURL(file);
             },
         };
