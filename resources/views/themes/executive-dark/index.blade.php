@@ -98,6 +98,15 @@
 
     /* ── INFO CARDS ── */
     .info-section { background:var(--bg); }
+    .desc-section { background:var(--card); }
+    .event-description {
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.85;
+      white-space:pre-line;
+      max-width:680px;
+    }
+    .event-description br { display:block; margin-bottom:4px; }
     .info-grid { display:grid; grid-template-columns:1fr; gap:14px; }
     @media (min-width:560px) { .info-grid { grid-template-columns:1fr 1fr; } }
     .info-card { background:var(--card); border:1px solid var(--border); border-left:2px solid var(--gold); border-radius:14px; padding:20px; display:flex; align-items:flex-start; gap:14px; transition:border-color .2s; }
@@ -215,9 +224,8 @@
       default           => '⭐',
   };
 
-  function speakerUrlExec(string $path): string {
-      return rtrim(config('app.url'), '/') . '/storage/' . ltrim(str_replace('\\', '/', $path), '/');
-  }
+  $speakerUrl = fn(string $path): string =>
+      rtrim(config('app.url'), '/') . '/storage/' . ltrim(str_replace('\\', '/', $path), '/');
 @endphp
 
 <header class="header-bar">
@@ -240,7 +248,7 @@
       <div class="hero-eyebrow">{{ $typeIcon }} {{ $typeLabel }}</div>
       <h1 class="hero-title">{{ $event->title }}</h1>
       <div class="hero-gold-line"></div>
-      @if ($description) <p class="hero-subtitle">{{ $description }}</p> @endif
+      @if ($description) <p class="hero-subtitle">{!! nl2br(e(\Illuminate\Support\Str::limit($description, 160))) !!}</p> @endif
       <div class="hero-meta">
         <div class="hero-meta-item">
           <div class="hero-meta-icon">📅</div>
@@ -286,7 +294,7 @@
       @if ($hasSpeaker1)
         <div class="speaker-card">
           <div class="speaker-photo-wrap">
-            @if ($sp1Photo) <img src="{{ speakerUrlExec($sp1Photo) }}" alt="{{ $sp1Name }}" loading="lazy">
+            @if ($sp1Photo) <img src="{{ $speakerUrl($sp1Photo) }}" alt="{{ $sp1Name }}" loading="lazy">
             @else <div class="speaker-photo-placeholder">👤</div> @endif
           </div>
           <div class="speaker-body">
@@ -299,7 +307,7 @@
       @if ($hasSpeaker2)
         <div class="speaker-card">
           <div class="speaker-photo-wrap">
-            @if ($sp2Photo) <img src="{{ speakerUrlExec($sp2Photo) }}" alt="{{ $sp2Name }}" loading="lazy">
+            @if ($sp2Photo) <img src="{{ $speakerUrl($sp2Photo) }}" alt="{{ $sp2Name }}" loading="lazy">
             @else <div class="speaker-photo-placeholder">👤</div> @endif
           </div>
           <div class="speaker-body">
@@ -312,7 +320,7 @@
       @if ($hasMc)
         <div class="speaker-card">
           <div class="speaker-photo-wrap">
-            @if ($mcPhoto) <img src="{{ speakerUrlExec($mcPhoto) }}" alt="{{ $mcName }}" loading="lazy">
+            @if ($mcPhoto) <img src="{{ $speakerUrl($mcPhoto) }}" alt="{{ $mcName }}" loading="lazy">
             @else <div class="speaker-photo-placeholder">🎙️</div> @endif
           </div>
           <div class="speaker-body">
@@ -323,6 +331,19 @@
         </div>
       @endif
     </div>
+  </div>
+</section>
+@endif
+
+@if ($description)
+<section class="info-section desc-section">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-label">Tentang Kegiatan</span>
+      <h2 class="section-title">Deskripsi</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="event-description">{!! nl2br(e($description)) !!}</div>
   </div>
 </section>
 @endif
